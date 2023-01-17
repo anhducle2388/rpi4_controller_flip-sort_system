@@ -1,14 +1,15 @@
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-#include <string.h>
 #include <wiringPi.h>
-
 #include "../lib/libLogHandler.h"
 
 #define INTERVAL_IN_MSEC  10
 #define NUM_TESTING_CYCLE 1000000
+
+// DEBUG LOGGING
 #define LOG_FILEPATH     "./log/log.txt"
 #define DEBUG_INTERVAL
 
