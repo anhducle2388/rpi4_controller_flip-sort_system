@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     pinMode(40, OUTPUT);
     pinMode(38, OUTPUT);
 
-    // Config routine uAlarm singla to execute excProgram() in precise interval timing
+    // Config routine uAlarm singal to execute excProgram() in precise interval timing
     signal(SIGALRM, excProgram);   
     ualarm(INTERVAL_IN_MSEC * 1000, INTERVAL_IN_MSEC * 1000);
 
