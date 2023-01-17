@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
 void excProgram(int sig_num)
 {
     #ifdef DEBUG
+    // Log control interval and number of testing cycles
     char strNumOfCyc[10] = "";
     snprintf(strNumOfCyc, 10, "%d", NUM_TESTING_CYCLE);  
     logTsMsg(LOG_MSG, LOG_FILEPATH, strNumOfCyc);
