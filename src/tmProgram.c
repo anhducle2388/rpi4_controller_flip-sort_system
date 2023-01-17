@@ -1,14 +1,10 @@
-/*
-gcc -Wall -o bin/tmProgram tmProgram.c -lwiringPi
-*/
-
 #include <stdio.h>
-#include <wiringPi.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
 #include <string.h>
 #include <time.h>
+#include <wiringPi.h>
 
 #define INTERVAL_IN_MSEC  10
 #define NUM_TESTING_CYCLE 1000000
@@ -26,14 +22,16 @@ void logTsMsg(char *mode, char *fpath, char *msg);
 
 int main(int argc, char *argv[])
 {
-    wiringPiSetupPhys();//use the physical pin numbers on the P1 connector
-
+    //use the physical pin numbers on the P1 connector
+    wiringPiSetupPhys();
     pinMode(40, OUTPUT);
     pinMode(38, OUTPUT);
 
+    // Config routine uAlarm singla to execute excProgram() in precise interval timing
     signal(SIGALRM, excProgram);   
     ualarm(INTERVAL_IN_MSEC * 1000, INTERVAL_IN_MSEC * 1000);
 
+    // Main loop program
     while(1)
     {
         
