@@ -16,15 +16,6 @@
     #define INTERVAL_IN_MSEC   500
 #endif
 
-// Debugging
-#define DEBUG_INTERVAL
-#ifdef  DEBUG_INTERVAL
-    #define NUM_TESTING_CYCLE 1000000
-#endif
-
-// Defined Directory
-#define LOG_FILEPATH     "./log/log.txt"
-
 // Dev-defined Functions 
 int hwGpioConfigure(void);
 int fwGpioConfigure(void);
