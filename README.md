@@ -28,4 +28,5 @@ TBD
 - [ ] IO Configuration with IO pin map for controling.
   - Focus on loadcell readings, transfering from Msp430 module code to Raspi 4.
   - IO Digital/Analog Mapping List.
-- [ ] Communication with other modules.
+- [ ] Add threading control for task scheduling between timing control and other communication.
+- [ ] Add Modbus TCP/IP to comm with Ethernet Remote IO.

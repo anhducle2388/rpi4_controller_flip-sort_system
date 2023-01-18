@@ -1,8 +1,10 @@
 # # gcc -Wall -o bin/tmProgram src/tmProgram.c -lwiringPi
 
-CC=gcc
-CFLAGS=-Wall -lwiringPi -I.
-OBJ= bin/app
+CC	= gcc
+CFLAGS	= -Wall -lwiringPi -I. -lpthread
+OBJ	= bin/app
+HEADER	= lib/libLogHandler.c src/app_threading.c src/app_timing_control.c
+SOURCE  = src/tmProgram.c
 
-app: src/tmProgram.c lib/libLogHandler.c
-	$(CC) -o $(OBJ) src/tmProgram.c lib/libLogHandler.c $(CFLAGS)
+app: $(SOURCE) $(HEADER)
+	$(CC) -o $(OBJ) $(SOURCE) $(HEADER) $(CFLAGS)
