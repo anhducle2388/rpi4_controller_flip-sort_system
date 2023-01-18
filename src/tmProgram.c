@@ -4,9 +4,14 @@
 #include <signal.h>
 #include <unistd.h>
 #include <wiringPi.h>
-#include "../lib/libLogHandler.h"
 
-#define INTERVAL_IN_MSEC  10
+#include "./lib/libLogHandler.h"
+#include "./lib/libThreadControl.h"
+
+#define INTERVAL_IN_MSEC   500
+#ifndef NUM_THREADS
+   #define NUM_THREADS     2
+#endif
 
 // Debugging
 #define DEBUG_INTERVAL
@@ -21,14 +26,16 @@
 int hwGpioConfigure(void);
 int fwGpioConfigure(void);
 int interptConfigure(void);
+
 int loopProgram(void);
 int execProgram(void);
+int main(void);
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */
 /* ################################################ */
 
-int main(int argc, char *argv[]) {
+int main(void) {
     /*
     Main program execution, includes 3 main section:
     - hwGpioConfigure() -> Config Gpio as digital/analog IO
@@ -40,6 +47,7 @@ int main(int argc, char *argv[]) {
     hwGpioConfigure();
     fwGpioConfigure();
     interptConfigure();
+    threadConfigure();
     
     // Main loop program
     while(1)
@@ -47,6 +55,7 @@ int main(int argc, char *argv[]) {
         loopProgram();
     }
 
+    pthread_exit(NULL);
     return 0;
 }
 
@@ -58,7 +67,6 @@ int execProgram(void) {
     /*
     Routined program execution - Control interval is defined in INTERVAL_IN_MSEC
     */
-
     #ifdef DEBUG_INTERVAL
     // Log control interval and number of testing cycles
     char strNumOfCyc[10] = "";
