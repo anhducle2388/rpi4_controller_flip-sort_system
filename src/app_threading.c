@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <unistd.h> // for sleep
-
-#include "../lib/libThreadControl.h"
-
-#ifndef NUM_THREADS
-   #define NUM_THREADS 2
-#endif
+#include "app_threading.h"
 
 // Function for Thread #1
 void *Thread1(void *threadid){
