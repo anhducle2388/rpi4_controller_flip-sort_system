@@ -15,7 +15,7 @@
 #endif
 
 #ifdef INTERVAL_IN_MSEC
-    #define INTERVAL_IN_MSEC   50
+    #define INTERVAL_IN_MSEC   200
 #endif
 
 // Dev-defined Functions 
@@ -37,14 +37,15 @@ int main(void) {
     - loopProgram()      -> Conituous looping execution program 
     - execProgram()      -> Routine execution program with pre-defined interval
     */
-
+    system("clear");
+    
     if (programStatusVerification() == 0) {
         // If the program inits the first instance
         hwGpioConfigure();
         fwGpioConfigure();
         interptConfigure();
         threadConfigure();
-        logTsMsg(LOG_MSG, LOG_FILEPATH, "Done initializing program.");
+        logTsMsg(LOG_MSG, LOG_FILEPATH, "Complete initializing program.");
         
         // Main loop program
         while(1)
@@ -57,7 +58,6 @@ int main(void) {
     else 
     {
         // If the program has been already running -> Log the error and terminate the duplicated process.
-        logTsMsg(ERR_MSG, LOG_FILEPATH, "Fail to create program instance. Another instance is running.");
         return 1;
     }
 }
@@ -74,15 +74,15 @@ int programStatusVerification(void) {
     // Open the lock file
     int fd = open(lock_file, O_RDWR | O_CREAT, 0640);
     if (fd < 0) {
-        perror("Unable to open lock file");
+        logTsMsg(ERR_MSG, LOG_FILEPATH,"Fail to create program instance. Unable to open lock file.");
         return 1;
     }
 
     // Try to acquire a lock on the file
     if (flock(fd, LOCK_EX | LOCK_NB) < 0) {
-        perror("Unable to acquire lock on file");
+        logTsMsg(ERR_MSG, LOG_FILEPATH,"Fail to create program instance. Unable to acquire lock on file.");
         close(fd);
-        exit(1);
+        return 1;
     }
 
     // Write the PID to the lock file
@@ -90,12 +90,12 @@ int programStatusVerification(void) {
     char pid_str[16];
     snprintf(pid_str, sizeof(pid_str), "%d", pid);
     if (write(fd, pid_str, strlen(pid_str)) < 0) {
-        perror("Unable to write PID to lock file");
+        logTsMsg(ERR_MSG, LOG_FILEPATH,"Fail to create program instance. Unable to write PID to lock file.");
         close(fd);
         return 1;
     }
     
-    logTsMsg(LOG_MSG, LOG_FILEPATH, "Start initializing program instance.");
+    logTsMsg(LOG_MSG, LOG_FILEPATH, "[0ms] Start initializing program instance.");
     return 0;
 }
 
