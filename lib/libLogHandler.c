@@ -29,9 +29,9 @@ void logTsMsg(char *mode, char *fpath, char *msg) {
     // Log to Cmd and Logfile
     if (preTsMs == 0) {
         printf("%s.%03d ", strMsg, curTsMs % 1000);
-        printf("%s %s\n", mode, "[INIT]");
+        printf("%s %s\n", mode, msg);
         fprintf(fptr, "%s.%03d ", strMsg, curTsMs % 1000);
-        fprintf(fptr, "%s %s\n", mode, "[INIT]");        
+        fprintf(fptr, "%s %s\n", mode, msg);        
 
     }
     else {

@@ -4,22 +4,25 @@
 #include <signal.h>
 #include <unistd.h>
 #include <wiringPi.h>
+#include <sys/file.h>
 
 #include "app_timing_control.h"
 #include "app_threading.h"
+#include "lib/libLogHandler.h"\
 
-#ifndef NUM_THREADS
+#ifdef NUM_THREADS
    #define NUM_THREADS         2
 #endif
 
-#ifndef INTERVAL_IN_MSEC
-    #define INTERVAL_IN_MSEC   500
+#ifdef INTERVAL_IN_MSEC
+    #define INTERVAL_IN_MSEC   50
 #endif
 
 // Dev-defined Functions 
 int hwGpioConfigure(void);
 int fwGpioConfigure(void);
 int interptConfigure(void);
+int programStatusVerification(void);
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */
@@ -34,24 +37,67 @@ int main(void) {
     - loopProgram()      -> Conituous looping execution program 
     - execProgram()      -> Routine execution program with pre-defined interval
     */
-    hwGpioConfigure();
-    fwGpioConfigure();
-    interptConfigure();
-    threadConfigure();
-    
-    // Main loop program
-    while(1)
-    {
-        
-    }
 
-    pthread_exit(NULL);
-    return 0;
+    if (programStatusVerification() == 0) {
+        // If the program inits the first instance
+        hwGpioConfigure();
+        fwGpioConfigure();
+        interptConfigure();
+        threadConfigure();
+        logTsMsg(LOG_MSG, LOG_FILEPATH, "Done initializing program.");
+        
+        // Main loop program
+        while(1)
+        {
+            
+        }
+        pthread_exit(NULL);
+        return 0;
+    }
+    else 
+    {
+        // If the program has been already running -> Log the error and terminate the duplicated process.
+        logTsMsg(ERR_MSG, LOG_FILEPATH, "Fail to create program instance. Another instance is running.");
+        return 1;
+    }
 }
 
 /* ################################################ */
 /* ################ CONFIG PROGRAM ################ */
 /* ################################################ */
+
+int programStatusVerification(void) {
+
+    // Path to the lock file
+    char *lock_file = "./bin/app.pid";
+
+    // Open the lock file
+    int fd = open(lock_file, O_RDWR | O_CREAT, 0640);
+    if (fd < 0) {
+        perror("Unable to open lock file");
+        return 1;
+    }
+
+    // Try to acquire a lock on the file
+    if (flock(fd, LOCK_EX | LOCK_NB) < 0) {
+        perror("Unable to acquire lock on file");
+        close(fd);
+        exit(1);
+    }
+
+    // Write the PID to the lock file
+    pid_t pid = getpid();
+    char pid_str[16];
+    snprintf(pid_str, sizeof(pid_str), "%d", pid);
+    if (write(fd, pid_str, strlen(pid_str)) < 0) {
+        perror("Unable to write PID to lock file");
+        close(fd);
+        return 1;
+    }
+    
+    logTsMsg(LOG_MSG, LOG_FILEPATH, "Start initializing program instance.");
+    return 0;
+}
 
 int hwGpioConfigure(void) {
     wiringPiSetupPhys();

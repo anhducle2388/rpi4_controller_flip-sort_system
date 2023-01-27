@@ -7,9 +7,6 @@
     #define NUM_TESTING_CYCLE 1000000
 #endif
 
-// Defined Directory
-#define LOG_FILEPATH  "./log/log.txt"
-
 int execProgram(void) {
     /*
     Routined program execution - Control interval is defined in INTERVAL_IN_MSEC
