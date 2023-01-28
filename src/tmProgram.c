@@ -23,6 +23,7 @@ int hwGpioConfigure(void);
 int fwGpioConfigure(void);
 int interptConfigure(void);
 int programStatusVerification(void);
+int programJsonConfig(void);
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */
@@ -40,11 +41,15 @@ int main(void) {
     system("clear");
     
     if (programStatusVerification() == 0) {
+
         // If the program inits the first instance
         hwGpioConfigure();
         fwGpioConfigure();
         interptConfigure();
         threadConfigure();
+
+        programJsonConfig();
+
         logTsMsg(LOG_MSG, LOG_FILEPATH, "Complete initializing program.");
         
         // Main loop program
