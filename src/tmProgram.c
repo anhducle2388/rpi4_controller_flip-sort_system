@@ -8,14 +8,14 @@
 
 #include "app_timing_control.h"
 #include "app_threading.h"
-#include "lib/libLogHandler.h"\
+#include "lib/libLogHandler.h"
 
 #ifdef NUM_THREADS
    #define NUM_THREADS         2
 #endif
 
 #ifdef INTERVAL_IN_MSEC
-    #define INTERVAL_IN_MSEC   200
+    #define INTERVAL_IN_MSEC   500
 #endif
 
 // Dev-defined Functions 
@@ -101,6 +101,10 @@ int programStatusVerification(void) {
     }
     
     logTsMsg(LOG_MSG, LOG_FILEPATH, "[0ms] Start initializing program instance.");
+    return 0;
+}
+
+int programJsonConfig(void) {
     return 0;
 }
 
