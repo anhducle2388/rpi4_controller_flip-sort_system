@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
-#include "pthread.h"
+#include <pthread.h>
+#include "lib/libLogHandler.h"
 
 #define NUM_THREADS 2
 

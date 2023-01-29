@@ -36,9 +36,9 @@ void logTsMsg(char *mode, char *fpath, char *msg) {
     }
     else {
         printf("%s.%03d ", strMsg, curTsMs % 1000);
-        printf("%s [%dms] %s\n", mode, curTsMs - preTsMs, msg);
+        printf("%s %s\n", mode, msg);
         fprintf(fptr, "%s.%03d ", strMsg, curTsMs % 1000);
-        fprintf(fptr, "%s [%dms] %s\n", mode, curTsMs - preTsMs, msg);        
+        fprintf(fptr, "%s %s\n", mode, msg);        
     }
 
     // Close file pointer

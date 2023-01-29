@@ -1,0 +1,1 @@
+{"LoadCell-1":{"SerialNumber":"012345","Params":{"slope":-100.0,"const":120.3},"InstallDate":"2022-01-29 20:54:15.803","CalibDate":"2023-01-29 21:46:43","CalibRaw":{"100g":102,"500g":408}},"LoadCell-2":{"SerialNumber":"112345","Params":{"slope":0,"const":0},"InstallDate":"2022-01-29 20:54:15.803","CalibDate":"2023-01-29 20:54:15.803","CalibRaw":{"100g":102,"500g":408}}}

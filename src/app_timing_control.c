@@ -16,7 +16,7 @@ int execProgram(void) {
     // Log control interval and number of testing cycles
     char strNumOfCyc[10] = "";
     snprintf(strNumOfCyc, 10, "%d", NUM_TESTING_CYCLE);  
-    logTsMsg(LOG_MSG, LOG_FILEPATH, strNumOfCyc);
+    logTsMsg(LOG_MSG, LOGPATH_INTERVAL_CONTROL, strNumOfCyc);
     for(u_int64_t i = 0; i < NUM_TESTING_CYCLE; i++);
     #endif
 
