@@ -10,6 +10,7 @@
 #include "app_threading.h"
 #include "lib/libLogHandler.h"
 #include "lib/libJsonConfig.h"
+#include "ethercat.h"
 
 #ifdef NUM_THREADS
    #define NUM_THREADS         2
@@ -50,6 +51,13 @@ int main(void) {
         fwGpioConfigure();
         interptConfigure();
         threadConfigure();
+
+        if (ec_init("eht0") > 0) {
+        printf("Ethercat init success.\n");
+        }
+        else {
+            printf("Ethercat init success.\n");
+        }
 
         logTsMsg(LOG_MSG, LOGPATH_OPERATION, "Complete initializing program.");
 
