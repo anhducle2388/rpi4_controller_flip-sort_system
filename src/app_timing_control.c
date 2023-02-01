@@ -1,11 +1,13 @@
 #include "app_timing_control.h"
 #include "./lib/libLogHandler.h"
 
-// Debug variables
-#define DEBUG_INTERVAL
-#ifdef  DEBUG_INTERVAL
-    #define NUM_TESTING_CYCLE 1000000
-#endif
+#define OPMODE_STOP     0
+#define OPMODE_RUN      1
+#define OPMODE_HOME     2
+
+#define COMMAND_STOP    0
+#define COMMAND_RUN     1
+#define COMMAND_HOME    2
 
 int execProgram(void) {
     /*
@@ -13,12 +15,32 @@ int execProgram(void) {
     */
 
     #ifdef DEBUG_INTERVAL
-    // Log control interval and number of testing cycles
-    char strNumOfCyc[10] = "";
-    snprintf(strNumOfCyc, 10, "%d", NUM_TESTING_CYCLE);  
-    logTsMsg(LOG_MSG, LOGPATH_INTERVAL_CONTROL, strNumOfCyc);
-    for(u_int64_t i = 0; i < NUM_TESTING_CYCLE; i++);
+    logTsMsg(LOG_MSG, LOGPATH_INTERVAL_CONTROL, "");
     #endif
+        
+    // Reading digital/analog signal sequence and update to appropriate variables -> Modbus Comm with Remote IO
+
+    
+    // Operation mode instructions
+    static u_int8_t OpsMode = OPMODE_STOP;
+
+    switch (OpsMode)
+    {
+    case OPMODE_STOP:
+        /* code */
+        break;
+
+    case OPMODE_HOME:
+        /* code */
+        break;
+
+    case OPMODE_RUN:
+        /* code */
+        break;
+
+    default:
+        break;
+    }
 
     return 0;
 }
