@@ -9,22 +9,24 @@
 #define COMMAND_RUN     1
 #define COMMAND_HOME    2
 
+extern int opMode;
+
 int execTimingProgram(void) {
     /*
     Routined program execution - Control interval is defined in INTERVAL_IN_MSEC
     */
 
     #ifdef DEBUG_INTERVAL
-    logTsMsg(LOG_MSG, LOGPATH_INTERVAL_CONTROL, "");
+    logTsMsg(LOG_MSG, TIME_LPATH, "");
     #endif
         
     // Reading digital/analog signal sequence and update to appropriate variables -> Modbus Comm with Remote IO
 
     
     // Operation mode instructions
-    static u_int8_t OpsMode = OPMODE_STOP;
+    
 
-    switch (OpsMode)
+    switch (opMode)
     {
     case OPMODE_STOP:
         /* code */

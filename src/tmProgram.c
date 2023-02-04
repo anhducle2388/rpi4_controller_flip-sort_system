@@ -11,7 +11,6 @@
 
 #include "lib/libLogHandler.h"
 #include "lib/libJsonConfig.h"
-#include "lib/libSoemBeckhoff.h"
 
 #ifdef NUM_THREADS
    #define NUM_THREADS         2
@@ -21,6 +20,14 @@
     #define INTERVAL_IN_MSEC   500
 #endif
 
+#define OPMODE_STOP     0
+#define OPMODE_RUN      1
+#define OPMODE_HOME     2
+
+#define COMMAND_STOP    0
+#define COMMAND_RUN     1
+#define COMMAND_HOME    2
+
 // Dev-defined Functions
 
 int getInstatnceStatus(void);
@@ -29,8 +36,9 @@ int cfgHdwrGpio(void);
 int cfgSftwGpio(void);
 int cfgInteruptTimer(void);
 
-char      IOMap[4096];
-cfgEcat   cfgEcatJson;
+int     opMode = OPMODE_STOP;
+uint8_t IOMap[4096];
+cfgEcat cfgEcatJson;
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */
@@ -59,10 +67,14 @@ int main(void) {
         cfgHdwrGpio();
         cfgSftwGpio();
         cfgInteruptTimer();
+
+        opMode = OPMODE_RUN;
+
         cfgThreadMap();
 
 
         logTsMsg(LOG_MSG, OPER_LPATH, "Complete initializing program");
+        
 
         // Main loop program
         while(1)

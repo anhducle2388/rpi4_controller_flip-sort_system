@@ -1,8 +1,8 @@
 #include "lib/libSoemBeckhoff.h"
 
 extern char strMsg[250];
-extern char strTmp[10];
-extern char IOMap[4096];
+extern char strTmp[100];
+extern uint8_t IOMap[4096];
 
 int getJsonEcatComm(cfgEcat *cfgEcat) {
 
@@ -36,12 +36,12 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
       logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "Fail to load and init ECAT SOEM lib due to invalid ECAT port config");
       return 1;
    }
-   logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Load and init ECAT SOEM");
+   logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Load and init ECAT communication");
 
    // Init and retrieve number of ECAT slaves
    if (ec_config_init(FALSE) == 0)
    {
-      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "Fail to communication with slaves");
+      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "Fail to communication with slave(s).");
       return 1;      
    }
 
@@ -85,6 +85,6 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
       logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "[ECAT] Timeout expired and ECAT has been initialized fail. Not all slave(s) in OP state");
       return 1;
    }
-   logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Load and init ECAT successfully. All slave(s) in OP state.");
+   logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Load and init ECAT communication successfully. All slave(s) in OP state");
    return 0;
 }
