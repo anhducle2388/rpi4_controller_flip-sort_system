@@ -120,12 +120,12 @@ int getJsonDeviceCfg(void) {
 
     double val;
 
-    logTsMsg(LOG_MSG, OPER_LPATH, "Loading parameters from  /dat/device_calib.json");
+    logTsMsg(LOG_MSG, OPER_LPATH, "Load device parameters");
 
     getDeviceCalibParams("LoadCell-1", "slope", &val);
     getDeviceCalibParams("LoadCell-1", "const", &val);
 
-    logTsMsg(LOG_MSG, OPER_LPATH, "Successfully load calibration parameters");
+    logTsMsg(LOG_MSG, OPER_LPATH, "Load device parameters successfully");
     return 0;
 }
 

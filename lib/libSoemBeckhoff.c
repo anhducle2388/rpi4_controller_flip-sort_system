@@ -32,35 +32,29 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
    // Init ECAT lib and context
    if (ec_init(cfgEcat->ifname) == 0 )
    {
-      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "Fail to initialize ECAT SOEM lib");
+      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "Fail to load and init ECAT SOEM lib due to invalid ECAT port config");
       return 1;
    }
-   logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Init ECAT SOEM lib");
+   logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Load and init ECAT SOEM");
 
    // Init and retrieve number of ECAT slaves
    if (ec_config_init(FALSE) == 0)
    {
-      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "Fail to init port and get ECAT slaves information");
+      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "Fail to communication with slaves");
       return 1;      
    }
 
-   strcpy(strMsg, "Number of ECAT slave(s) found and configured: ");
-   snprintf(strTmp, sizeof(strTmp), "%d", ec_slavecount);
-   strcat(strMsg, strTmp);
+   strcpy(strMsg, "[ECAT] Number of slave(s) found and configured: ");
+   snprintf(strTmp, sizeof(strTmp), "%d", ec_slavecount); strcat(strMsg, strTmp);
+   logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
 
-   logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, strMsg);
    for(uint8_t i = 1; i <= ec_slavecount; i++)
    {
-      strcpy(strMsg, "ECAT Slave Id#");
-
-      snprintf(strTmp, sizeof(strTmp), "%d", i);
-      strcat(strMsg, strTmp);
+      strcpy(strMsg, "[ECAT] Slave Id#");
+      snprintf(strTmp, sizeof(strTmp), "%d", i); strcat(strMsg, strTmp);
       strcat(strMsg, " Name=");
       strcat(strMsg, ec_slave[i].name);
-
       logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
-
-      // printf("  - Id#%d Name=%s.\n", i, ec_slave[i].name);
    }
 
    // Set the EtherCAT network at SAFE_OP
@@ -82,12 +76,10 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
 
    if (ec_slave[0].state != EC_STATE_OPERATIONAL)
    {
-      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "ECAT has been initialized fail");
+      if (cntRetry)
+      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "[ECAT] Timeout expired and ECAT has been initialized fail. Not all slave(s) in OP state");
       return 1;
    }
-   else
-   {
-      logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Initialize ECAT successfully and in OP state");
-      return 0;
-   }
+   logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Load and init ECAT successfully. All slave(s) in OP state.");
+   return 0;
 }

@@ -6,7 +6,7 @@
 #include <lib/libLogHandler.h>
 
 #define ECAT_SOEM_CONFG   "./dat/comm_ecat.json"
-#define ECAT_SOEM_LPATH   "./log/comm_log.txt"
+#define ECAT_SOEM_LPATH   "./log/log_comm.txt"
 #define ECAT_INIT_RETRY    200
 
 #define DO_KL2134
@@ -15,9 +15,17 @@
 #define AI_KL3202
 
 typedef struct {
-   char     *ifname;
-   uint8_t  numOfNodes;
+   char const *ifname;
+   uint8_t    numOfNodes;
 } cfgEcat;
 
 int getJsonEcatComm(cfgEcat * cfgEcat);
 int cfgHdwrEcatComm(cfgEcat * cfgEcat);
+
+int wrDigOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, boolean setval);
+int rdDigOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, boolean *retval);
+int rdDigIn(uint8_t slvId, uint8_t terminalId, uint8_t channelId, boolean *retval);;
+
+int wrAnlgOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, uint16_t retval);
+int rdAnlgOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, uint16_t *retval);
+int rdAnlgIn(uint8_t slvId, uint8_t terminalId, uint8_t channelId, uint16_t *retval);
