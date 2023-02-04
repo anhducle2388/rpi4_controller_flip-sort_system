@@ -29,8 +29,8 @@ int cfgHdwrGpio(void);
 int cfgSftwGpio(void);
 int cfgInteruptTimer(void);
 
-uint8_t  IOmap[4096];
-cfgEcat cfgEcatJson;
+char      IOMap[4096];
+cfgEcat   cfgEcatJson;
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */

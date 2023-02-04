@@ -2,6 +2,7 @@
 
 extern char strMsg[250];
 extern char strTmp[10];
+extern char IOMap[4096];
 
 int getJsonEcatComm(cfgEcat *cfgEcat) {
 
@@ -27,7 +28,7 @@ int getJsonEcatComm(cfgEcat *cfgEcat) {
 
 int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
 
-   uint8 cntRetry = ECAT_INIT_RETRY;
+   uint8_t cntRetry = ECAT_INIT_RETRY;
 
    // Init ECAT lib and context
    if (ec_init(cfgEcat->ifname) == 0 )
@@ -56,6 +57,10 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
       strcat(strMsg, ec_slave[i].name);
       logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
    }
+
+   // Init IOMap
+   ec_config_map(&IOMap);
+   ec_configdc();
 
    // Set the EtherCAT network at SAFE_OP
    ec_statecheck(0, EC_STATE_SAFE_OP,  EC_TIMEOUTSTATE * 4);
