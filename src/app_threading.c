@@ -19,7 +19,7 @@ void *Thread_Comm(void *threadid){
 }
 
 // Function to initialize and init thread control
-int threadConfigure() {
+int cfgThreadMap() {
         
     // Init thread list
     pthread_t threads[NUM_THREADS];

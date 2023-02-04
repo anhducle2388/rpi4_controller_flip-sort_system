@@ -38,7 +38,7 @@ int setDeviceCalibParams(char *devName,char *paramName, double setVal) {
     // Update new calib value and calib date
     json_object_object_add(paramDat, paramName, json_object_new_double(setVal));
     json_object_object_add(devInstance, "CalibDate", json_object_new_string(strTs));
-    json_object_to_file("config.json", logCalData);
+    json_object_to_file(DEVICE_CALIB_LOG, logCalData);
 
     json_object_put(logCalData);
 

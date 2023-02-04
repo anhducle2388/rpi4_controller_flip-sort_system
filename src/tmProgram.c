@@ -21,12 +21,13 @@
     #define INTERVAL_IN_MSEC   500
 #endif
 
-// Dev-defined Functions 
-int cfgHardwareGpio(void);
-int cfgSoftwareGpio(void);
-int cfgTimerInterupt(void);
+// Dev-defined Functions
+
 int getInstatnceStatus(void);
-int getJsonConfig(void);
+int getJsonDeviceCfg(void);
+int cfgHdwrGpio(void);
+int cfgSftwGpio(void);
+int cfgInteruptTimer(void);
 
 uint8_t  IOmap[4096];
 cfgEcat cfgEcatJson;
@@ -36,13 +37,14 @@ cfgEcat cfgEcatJson;
 /* ################################################ */
 
 int main(void) {
+
     /*
     Main program execution, includes 3 main section:
-    - cfgHardwareGpio() -> Config Gpio as digital/analog IO
-    - cfgSoftwareGpio() -> Config advanced funtions for IO port like UART...
-    - cfgTimerInterupt() -> Interupt config + Routine timer interupt config
-    - exeCycleProgram()      -> Conituous looping execution program 
-    - execTimingProgram()      -> Routine execution program with pre-defined interval
+    - cfgHdwrGpio()         -> Config Gpio as digital/analog IO
+    - cfgSftwGpio()         -> Config advanced funtions for IO port like UART...
+    - cfgInteruptTimer()    -> Interupt config + Routine timer interupt config
+    - exeCycleProgram()     -> Conituous looping execution program 
+    - execTimingProgram()   -> Routine execution program with pre-defined interval
     */
 
     system("clear");
@@ -50,17 +52,17 @@ int main(void) {
     if (getInstatnceStatus() == 0) {
 
         // If the program inits the first instance
-        getJsonConfig();
-        cfgHardwareGpio();
-        cfgSoftwareGpio();
-        cfgTimerInterupt();
+        getJsonDeviceCfg();
+        getJsonEcatComm(&cfgEcatJson);
+        cfgHdwrEcatComm(&cfgEcatJson);   
+        
+        cfgHdwrGpio();
+        cfgSftwGpio();
+        cfgInteruptTimer();
+        cfgThreadMap();
 
-        getEcatCommJson(ECAT_SOEM_CONFG, &cfgEcatJson);
-        cfgHardwareEcatSoem(&cfgEcatJson);   
 
-        threadConfigure();
-
-        logTsMsg(LOG_MSG, OPER_LPATH, "Complete initializing program.");
+        logTsMsg(LOG_MSG, OPER_LPATH, "Complete initializing program");
 
         // Main loop program
         while(1)
@@ -114,7 +116,7 @@ int getInstatnceStatus(void) {
     return 0;
 }
 
-int getJsonConfig(void) {
+int getJsonDeviceCfg(void) {
 
     double val;
 
@@ -123,22 +125,22 @@ int getJsonConfig(void) {
     getDeviceCalibParams("LoadCell-1", "slope", &val);
     getDeviceCalibParams("LoadCell-1", "const", &val);
 
-    logTsMsg(LOG_MSG, OPER_LPATH, "Successfully load calibration parameters.");
+    logTsMsg(LOG_MSG, OPER_LPATH, "Successfully load calibration parameters");
     return 0;
 }
 
-int cfgHardwareGpio(void) {
+int cfgHdwrGpio(void) {
     wiringPiSetupPhys();
     pinMode(40, OUTPUT);
     pinMode(38, OUTPUT);
     return 0;
 }
 
-int cfgSoftwareGpio(void) {
+int cfgSftwGpio(void) {
     return 0;
 }
 
-int cfgTimerInterupt() {
+int cfgInteruptTimer() {
     // Config routine uAlarm singal to execute execTimingProgram() in precise interval timing
     signal(SIGALRM, execTimingProgram);   
     ualarm(INTERVAL_IN_MSEC * 1000, INTERVAL_IN_MSEC * 1000);

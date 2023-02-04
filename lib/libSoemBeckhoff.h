@@ -19,5 +19,5 @@ typedef struct {
    uint8_t  numOfNodes;
 } cfgEcat;
 
-int getEcatCommJson(char * jsonPath, cfgEcat * cfgEcat);
-int cfgHardwareEcatSoem(cfgEcat * cfgEcat);
+int getJsonEcatComm(cfgEcat * cfgEcat);
+int cfgHdwrEcatComm(cfgEcat * cfgEcat);

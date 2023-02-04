@@ -3,11 +3,9 @@
 extern char strMsg[250];
 extern char strTmp[10];
 
-// uint8_t IOmap[4096];
+int getJsonEcatComm(cfgEcat *cfgEcat) {
 
-int getEcatCommJson(char *jsonPath, cfgEcat *cfgEcat) {
-
-   json_object *cfgEcatObj = json_object_from_file(jsonPath);
+   json_object *cfgEcatObj = json_object_from_file(ECAT_SOEM_CONFG);
    json_object  *cfgEcatComm, *cfgEcatPcPort, *cfgNumOfNodes;
 
    // Retrieve data from json data hierarchy
@@ -27,7 +25,7 @@ int getEcatCommJson(char *jsonPath, cfgEcat *cfgEcat) {
    return 0;
 }
 
-int cfgHardwareEcatSoem(cfgEcat * cfgEcat) {
+int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
 
    uint8 cntRetry = ECAT_INIT_RETRY;
 
@@ -47,13 +45,24 @@ int cfgHardwareEcatSoem(cfgEcat * cfgEcat) {
       return 1;      
    }
 
-   strcpy(strMsg, "Number of slave(s) found and configured: ");
+   strcpy(strMsg, "Number of ECAT slave(s) found and configured: ");
    snprintf(strTmp, sizeof(strTmp), "%d", ec_slavecount);
    strcat(strMsg, strTmp);
 
    logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, strMsg);
-   for(uint8_t i = 1; i < ec_slavecount; i++) 
-         printf("  - Id#%d Name=%s.\n", i, ec_slave[i].name);
+   for(uint8_t i = 1; i <= ec_slavecount; i++)
+   {
+      strcpy(strMsg, "ECAT Slave Id#");
+
+      snprintf(strTmp, sizeof(strTmp), "%d", i);
+      strcat(strMsg, strTmp);
+      strcat(strMsg, " Name=");
+      strcat(strMsg, ec_slave[i].name);
+
+      logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
+
+      // printf("  - Id#%d Name=%s.\n", i, ec_slave[i].name);
+   }
 
    // Set the EtherCAT network at SAFE_OP
    ec_statecheck(0, EC_STATE_SAFE_OP,  EC_TIMEOUTSTATE * 4);
