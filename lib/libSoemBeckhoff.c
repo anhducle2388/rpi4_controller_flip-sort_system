@@ -35,7 +35,6 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
       logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "Fail to initialize ECAT SOEM lib");
       return 1;
    }
-
    logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Init ECAT SOEM lib");
 
    // Init and retrieve number of ECAT slaves
@@ -81,14 +80,14 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
    }
    while ((ec_slave[0].state != EC_STATE_OPERATIONAL) && cntRetry--);
 
-   if (ec_slave[0].state == EC_STATE_OPERATIONAL)
+   if (ec_slave[0].state != EC_STATE_OPERATIONAL)
    {
       logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "ECAT has been initialized fail");
       return 1;
    }
    else
    {
-      logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "ECAT has been initialized successfully and ECAT is OPERATIONAL");
+      logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Initialize ECAT successfully and in OP state");
       return 0;
    }
 }
