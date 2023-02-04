@@ -1,16 +1,13 @@
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <sys/time.h>
-
 #include "../lib/libLogHandler.h"
+
+char strMsg[250];
+char strTmp[10];
 
 void logTsMsg(char *mode, char *fpath, char *msg) {
 
     static u_int32_t curTsMs = 0, preTsMs = 0;
     struct timeval curTimeVal;
-    char   strMsg[128];
+    char   tmpMsg[128];
 
     // Open file pointer
     FILE *fptr;
@@ -24,22 +21,24 @@ void logTsMsg(char *mode, char *fpath, char *msg) {
 
     // Convert from usec to msec
     curTsMs = curTimeVal.tv_sec*1000LL + curTimeVal.tv_usec/1000; // calculate milliseconds
-    strftime(strMsg, 80, "%Y-%m-%d %H:%M:%S", localtime(&curTimeVal.tv_sec));
+    strftime(tmpMsg, 200, "%Y-%m-%d %H:%M:%S", localtime(&curTimeVal.tv_sec));
 
     // Log to Cmd and Logfile
     if (preTsMs == 0) {
-        printf("%s.%03d ", strMsg, curTsMs % 1000);
-        printf("%s %s\n", mode, msg);
-        fprintf(fptr, "%s.%03d ", strMsg, curTsMs % 1000);
-        fprintf(fptr, "%s %s\n", mode, msg);        
-
+        printf("%s.%03d ", tmpMsg, curTsMs % 1000);
+        printf("%s %s.\n", mode, msg);
+        fprintf(fptr, "%s.%03d ", tmpMsg, curTsMs % 1000);
+        fprintf(fptr, "%s %s.\n", mode, msg);        
     }
     else {
-        printf("%s.%03d ", strMsg, curTsMs % 1000);
-        printf("%s %s\n", mode, msg);
-        fprintf(fptr, "%s.%03d ", strMsg, curTsMs % 1000);
-        fprintf(fptr, "%s %s\n", mode, msg);        
+        printf("%s.%03d ", tmpMsg, curTsMs % 1000);
+        printf("%s %s.\n", mode, msg);
+        fprintf(fptr, "%s.%03d ", tmpMsg, curTsMs % 1000);
+        fprintf(fptr, "%s %s.\n", mode, msg);        
     }
+
+    // Clear string message after log
+    strcpy(strMsg,"");
 
     // Close file pointer
     fclose(fptr);

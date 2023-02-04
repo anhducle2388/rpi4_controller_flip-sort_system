@@ -1,0 +1,65 @@
+{
+   "config_comm" : {
+      "nic_port" : "eth0",
+      "node_num" : "1"
+   },
+   "config_node" : {
+      "1" : {
+         "name" : "BK1120",
+         "output" : {
+            "1" : {
+               "name" : "KL2134",
+               "dbit" : "1",
+               "chnl" : "4"
+            },
+            "2" : {
+               "name" : "KL2134",
+               "dbit" : "1",
+               "chnl" : "4"
+            },
+            "3" : {
+               "name" : "KL2134",
+               "dbit" : "1",
+               "chnl" : "4"
+            },
+            "4" : {
+               "name" : "KL2134",
+               "dbit" : "1",
+               "chnl" : "4"
+            },
+            "5" : {
+               "name" : "KL4002",
+               "dbit" : "16",
+               "chnl" : "2"
+            }
+         },
+         "input" : {
+            "1" : {
+               "name" : "KL1104",
+               "dbit" : "1",
+               "chnl" : "4"
+            },
+            "2" : {
+               "name" : "KL1104",
+               "dbit" : "1",
+               "chnl" : "4"
+            },
+            "3" : {
+               "name" : "KL1104",
+               "dbit" : "1",
+               "chnl" : "4"
+            },
+            "4" : {
+               "name" : "KL1104",
+               "dbit" : "1",
+               "chnl" : "4"
+            },
+            "5" : {
+               "name" : "KL3202",
+               "dbit" : "16",
+               "chnl" : "2"
+            }
+         }
+      }
+   }
+}

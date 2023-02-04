@@ -1,9 +1,16 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#include <sys/time.h>
+
 #define LOG_MSG "[LOG]"
 #define DBG_MSG "[DBG]"
 #define ERR_MSG "[ERR]"
 
-#ifndef LOGPATH_OPERATION
-#define LOGPATH_OPERATION  "./log/oplog.txt"
+#ifndef OPER_LPATH
+#define OPER_LPATH  "./log/oper_log.txt"
 #endif
 
 void logTsMsg(char *mode, char *fpath, char *msg);

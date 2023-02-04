@@ -9,7 +9,7 @@
 #define COMMAND_RUN     1
 #define COMMAND_HOME    2
 
-int execProgram(void) {
+int execTimingProgram(void) {
     /*
     Routined program execution - Control interval is defined in INTERVAL_IN_MSEC
     */
