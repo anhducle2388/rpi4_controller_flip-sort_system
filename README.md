@@ -3,7 +3,7 @@
 
 ## 1. Hardware:
 - Raspi 4B with 4GB Ram.
-- Control with interval `50ms` and based on benchtest can run upto 10.000 line of codes.
+- Control with interval `10ms` and based on benchtest can run upto 10.000 line of codes.
 
 ## 2. Build/Run App Instruction:
 ### 2.1. Build App
@@ -13,20 +13,25 @@
 make
 ```
 ### 2.2 Run App
-- To run the application, run below cmd:
+- Run below cmd to run the application:
 ```
-./bin/app
+nohup sudo ./bin/app
 ```
-
+- Run below cmd to exit the application:
+  - `htop` and find corresponding PID of `./bin/app`
+  - 'ps kill -9 <<<PID>>>' to kill the program.
 ## 3. Features
-TBD
+- Ethercat Comm with Beckhoff Ethercat Remote IO.
 
 ## 4. Results
-TBD
+- Ethercat Comm with Beckhoff Ethercat Remote IO with delay 1ms without logging.
 
 ## 5. TODOs
 - [ ] IO Configuration with IO pin map for controling.
-  - Focus on loadcell readings, transfering from Msp430 module code to Raspi 4.
-  - IO Digital/Analog Mapping List.
-- [ ] Add threading control for task scheduling between timing control and other communication.
-- [ ] Add Modbus TCP/IP to comm with Ethernet Remote IO.
+  - [ ] Focus on loadcell readings, transfering from Msp430 module code to Raspi 4.
+  - [ ] Dev function to Rd/Wr Io more easily.
+  - [ ] IO Digital/Analog Mapping List.
+- [x] Add threading control for task scheduling between timing control and other communication.
+- [x] Add Ethercat to comm with Ethernet Remote IO.
+- [ ] Add Ethercat to comm with Ethernet Remote IO. -> Able to comm by Ethercat so depriotize to dev for Modbus TCP.
+- [ ] Logging handler to avoid CPU overload. -> Consider to use syslog or update libLogHandler to load buffer to RAM and write by batch to avoid CPU overload.
