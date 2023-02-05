@@ -1,1 +1,1 @@
-nohup sudo ./bin/app &
+nohup sudo ./bin/app > log/nohup.log &

@@ -84,7 +84,7 @@ void *Thread_IoTask(void *threadid) {
 // Function for Thread #2
 void *Thread_DiagComm(void *threadid) {
     retGoto_Thread2:
-        chkEcatDiagnosis();
+        chkEcatDiagnosis(&cfgEcatJson);
         usleep(IO_TASK_ECATDIAG_us);
     goto retGoto_Thread2;
 }

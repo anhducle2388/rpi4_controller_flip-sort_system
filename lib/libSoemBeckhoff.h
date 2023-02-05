@@ -17,11 +17,12 @@ typedef struct {
    uint8_t    IOMap[ECAT_IOMAP_BUFFER];
    uint8_t    curWkc;
    uint8_t    expectedWkc;
+   uint8_t    isRun;
 } cfgEcat;
 
 int getJsonEcatComm(cfgEcat * cfgEcat);
 int cfgHdwrEcatComm(cfgEcat * cfgEcat);
-int chkEcatDiagnosis(void);
+int chkEcatDiagnosis(cfgEcat * cfgEcat);
 
 int wrDigOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, boolean setval);
 int rdDigOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, boolean *retval);
