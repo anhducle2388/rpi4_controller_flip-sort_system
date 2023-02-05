@@ -2,14 +2,16 @@
 #include "./lib/libLogHandler.h"
 
 #define OPMODE_STOP     0
-#define OPMODE_RUN      1
+#define OPMODE_OPER     1
 #define OPMODE_HOME     2
 
 #define COMMAND_STOP    0
-#define COMMAND_RUN     1
+#define COMMAND_OPER    1
 #define COMMAND_HOME    2
 
-extern int opMode;
+extern int  OpMode, preOpMode;
+extern char strMsg[250];
+extern char strTmp[100];
 
 int execTimingProgram(void) {
     /*
@@ -19,30 +21,31 @@ int execTimingProgram(void) {
     #ifdef DEBUG_INTERVAL
     logTsMsg(LOG_MSG, TIME_LPATH, "");
     #endif
-        
-    // Reading digital/analog signal sequence and update to appropriate variables -> Modbus Comm with Remote IO
 
-    
-    // Operation mode instructions
-    
+    if(preOpMode != OpMode)
+    {
+        snprintf(strMsg, sizeof(strMsg), "OpMode has been changed from %d to %d", preOpMode, OpMode);
+        logTsMsg(LOG_MSG, OPER_LPATH, strMsg);
+    }
 
-    switch (opMode)
+    switch (OpMode)
     {
     case OPMODE_STOP:
-        /* code */
+        // logTsMsg(DBG_MSG, OPER_LPATH, "Operation Mode = STOP");
         break;
 
     case OPMODE_HOME:
-        /* code */
+        // logTsMsg(DBG_MSG, OPER_LPATH, "Operation Mode = HOME");
         break;
 
-    case OPMODE_RUN:
-        /* code */
+    case OPMODE_OPER:
+        // logTsMsg(DBG_MSG, OPER_LPATH, "Operation Mode = OPER");
         break;
 
     default:
         break;
     }
-
+    
+    preOpMode = OpMode;
     return 0;
 }

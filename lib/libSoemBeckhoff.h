@@ -21,6 +21,7 @@ typedef struct {
 
 int getJsonEcatComm(cfgEcat * cfgEcat);
 int cfgHdwrEcatComm(cfgEcat * cfgEcat);
+int chkEcatDiagnosis(void);
 
 int wrDigOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, boolean setval);
 int rdDigOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, boolean *retval);
@@ -29,3 +30,4 @@ int rdDigIn(uint8_t slvId, uint8_t terminalId, uint8_t channelId, boolean *retva
 int wrAnlgOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, uint16_t retval);
 int rdAnlgOut(uint8_t slvId, uint8_t terminalId, uint8_t channelId, uint16_t *retval);
 int rdAnlgIn(uint8_t slvId, uint8_t terminalId, uint8_t channelId, uint16_t *retval);
+

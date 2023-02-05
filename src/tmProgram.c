@@ -13,11 +13,11 @@
 #include "lib/libJsonConfig.h"
 
 #ifdef NUM_THREADS
-   #define NUM_THREADS         2
+   #define NUM_THREADS         3
 #endif
 
 #ifdef INTERVAL_IN_MSEC
-    #define INTERVAL_IN_MSEC   500
+    #define INTERVAL_IN_MSEC   50
 #endif
 
 #define OPMODE_STOP     0
@@ -25,7 +25,7 @@
 #define OPMODE_HOME     2
 
 #define COMMAND_STOP    0
-#define COMMAND_RUN     1
+#define COMMAND_OPER     1
 #define COMMAND_HOME    2
 
 // Dev-defined Functions
@@ -36,7 +36,8 @@ int cfgHdwrGpio(void);
 int cfgSftwGpio(void);
 int cfgInteruptTimer(void);
 
-int     opMode = OPMODE_STOP;
+int OpMode = OPMODE_STOP, preOpMode;
+
 uint8_t IOMap[4096];
 cfgEcat cfgEcatJson;
 
@@ -68,14 +69,14 @@ int main(void) {
         cfgSftwGpio();
         cfgInteruptTimer();
 
-        opMode = OPMODE_RUN;
+        
 
         cfgThreadMap();
 
 
         logTsMsg(LOG_MSG, OPER_LPATH, "Complete initializing program");
         
-
+        OpMode = OPMODE_RUN;
         // Main loop program
         while(1)
         {
