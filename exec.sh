@@ -1,0 +1,1 @@
+nohup sudo ./bin/app
