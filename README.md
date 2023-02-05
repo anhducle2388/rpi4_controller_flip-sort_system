@@ -29,10 +29,7 @@ bash exit.sh
 
 ## 5. TODOs
 - [ ] IO Configuration with IO pin map for controling.
-  - [ ] Focus on loadcell readings, transfering from Msp430 module code to Raspi 4.
-  - [ ] Dev function to Rd/Wr Io more easily.
-  - [ ] IO Digital/Analog Mapping List.
-- [x] Add threading control for task scheduling between timing control and other communication.
-- [x] Add Ethercat to comm with Ethernet Remote IO.
-- [ ] Add Ethercat to comm with Ethernet Remote IO. -> Able to comm by Ethercat so depriotize to dev for Modbus TCP.
-- [ ] Logging handler to avoid CPU overload. -> Consider to use syslog or update libLogHandler to load buffer to RAM and write by batch to avoid CPU overload.
+  - Focus on loadcell readings, transfering from Msp430 module code to Raspi 4.
+  - IO Digital/Analog Mapping List.
+- [ ] Add threading control for task scheduling between timing control and other communication.
+- [ ] Add Modbus TCP/IP to comm with Ethernet Remote IO.

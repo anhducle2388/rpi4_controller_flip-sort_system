@@ -1,4 +1,3 @@
-log/
 .vscode/
+log/
 bin/app.pid
-nohup.out
