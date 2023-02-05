@@ -25,7 +25,7 @@
 #define OPMODE_HOME     2
 
 #define COMMAND_STOP    0
-#define COMMAND_OPER     1
+#define COMMAND_OPER    1
 #define COMMAND_HOME    2
 
 // Dev-defined Functions
@@ -38,8 +38,7 @@ int cfgInteruptTimer(void);
 
 int OpMode = OPMODE_STOP, preOpMode;
 
-uint8_t IOMap[4096];
-cfgEcat cfgEcatJson;
+cfgEcat   cfgEcatJson;
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */
@@ -57,10 +56,8 @@ int main(void) {
     */
 
     system("clear");
-    
     if (getInstatnceStatus() == 0) {
 
-        // If the program inits the first instance
         getJsonDeviceCfg();
         getJsonEcatComm(&cfgEcatJson);
         cfgHdwrEcatComm(&cfgEcatJson);   
@@ -68,15 +65,12 @@ int main(void) {
         cfgHdwrGpio();
         cfgSftwGpio();
         cfgInteruptTimer();
-
-        
-
         cfgThreadMap();
-
 
         logTsMsg(LOG_MSG, OPER_LPATH, "Complete initializing program");
         
         OpMode = OPMODE_RUN;
+
         // Main loop program
         while(1)
         {

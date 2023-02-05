@@ -1,15 +1,12 @@
 #include "../lib/libLogHandler.h"
 
-char strMsg[250];
-char strTmp[100];
+char strMsg[250], strTmp[100];
 
 void logTsMsg(char *mode, char *fpath, char *msg) {
 
     static u_int32_t curTsMs = 0;
     struct timeval curTimeVal;
     char   tmpMsg[128];
-
-    
 
     // Get current timestamp in milisecs for return val + print timestamp and actual processing interval
     gettimeofday(&curTimeVal, NULL); 
@@ -31,9 +28,6 @@ void logTsMsg(char *mode, char *fpath, char *msg) {
         printf("%s %s.\n", mode, msg);
     }
 
-
     // Clear string message after log
     strcpy(strMsg,"");
-
-
 }

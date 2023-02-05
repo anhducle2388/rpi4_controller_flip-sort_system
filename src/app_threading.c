@@ -2,21 +2,23 @@
 
 #define NUM_THREADS 3
 
-#define IO_TASK_INTERVAL_uS 10000
-#define IO_TASK_ECATDIAG_us 5000
+#define IO_TASK_INTERVAL_uS 1000
+#define IO_TASK_ECATDIAG_us 100
 
-extern int OpMode, preOpMode;
-extern char strMsg[250];
-extern char strTmp[100];
+extern int  OpMode, preOpMode;
+extern char strMsg[250], strTmp[100];
 
 uint8_t stsUpdateVal = FALSE;
-uint8_t curWkc = 0, preWkc = 0;
 uint8_t LED21 = 0x01;
 uint8_t LED43 = 0x84;
 
+extern cfgEcat   cfgEcatJson; 
+
 // Function for Thread #1 IO Scanning Task
 void *Thread_IoTask(void *threadid) {
-    uint8_t  i, j, oloop, iloop;
+    uint8_t i, j, oloop, iloop;
+    uint8_t preWkc = 0;
+
     retGoto_Thread1:
         if (OpMode)
         {
@@ -35,10 +37,18 @@ void *Thread_IoTask(void *threadid) {
                     }
 
                     ec_send_processdata();
-                    curWkc = ec_receive_processdata(EC_TIMEOUTRET);
-                    if(ec_iserror() || (curWkc != preWkc)) {
-                        snprintf(strMsg, sizeof(strMsg), "Wkc has been changed from %d to %d", preWkc, curWkc);
-                        logTsMsg(LOG_MSG, OPER_LPATH, strMsg);
+                    cfgEcatJson.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
+                    
+                    // Log comm oper if the Wkc has been changed
+                    if(cfgEcatJson.curWkc != preWkc) {
+                        snprintf(strMsg, sizeof(strMsg), "[ECAT] Wkc has been changed from %d to %d", preWkc, cfgEcatJson.curWkc);
+                        logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, strMsg);
+                    }
+
+                    // Log error if Wkc not at expected value.
+                    if(cfgEcatJson.curWkc < cfgEcatJson.expectedWkc) {
+                        snprintf(strMsg, sizeof(strMsg), "[ECAT] Wkc = %d < Expected Wkc %d", cfgEcatJson.curWkc, cfgEcatJson.expectedWkc);
+                        logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, strMsg);                        
                     }
 
                     // if (( curWkc >= 3) && ((oloop > 0) || (iloop > 0)))
@@ -62,7 +72,7 @@ void *Thread_IoTask(void *threadid) {
                     // }
                 }
             }
-            preWkc = curWkc;
+            preWkc = cfgEcatJson.curWkc;
             stsUpdateVal = 1;
         }
         usleep(IO_TASK_INTERVAL_uS);
@@ -88,7 +98,7 @@ void *Thread_Handler(void *threadid) {
         stsUpdateVal = TRUE;
 
         // Sleep to wait
-        usleep(IO_TASK_ECATDIAG_us * 50);
+        usleep(500000);
 
     goto retGoto_Thread3;
 }

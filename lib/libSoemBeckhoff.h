@@ -9,14 +9,14 @@
 #define ECAT_SOEM_LPATH   "./log/log_comm.txt"
 #define ECAT_INIT_RETRY    200
 
-#define DO_KL2134
-#define DI_KL1104
-#define AO_KL4002
-#define AI_KL3202
+#define ECAT_IOMAP_BUFFER  4096
 
 typedef struct {
    char const *ifname;
-   uint8_t    numOfNodes;
+   uint8_t     numOfNodes;
+   uint8_t    IOMap[ECAT_IOMAP_BUFFER];
+   uint8_t    curWkc;
+   uint8_t    expectedWkc;
 } cfgEcat;
 
 int getJsonEcatComm(cfgEcat * cfgEcat);

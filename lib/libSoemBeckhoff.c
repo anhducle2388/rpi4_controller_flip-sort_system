@@ -1,8 +1,6 @@
 #include "lib/libSoemBeckhoff.h"
 
-extern char strMsg[250];
-extern char strTmp[100];
-extern uint8_t IOMap[4096];
+extern char strMsg[250], strTmp[100];
 
 int getJsonEcatComm(cfgEcat *cfgEcat) {
 
@@ -45,25 +43,25 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
       return 1;      
    }
 
-   strcpy(strMsg, "[ECAT] Number of slave(s) found and configured: ");
-   snprintf(strTmp, sizeof(strTmp), "%d", ec_slavecount); strcat(strMsg, strTmp);
+   snprintf(strMsg, sizeof(strMsg), "[ECAT] Number of slave(s) found and configured: %d", ec_slavecount);
    logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
 
    for(uint8_t i = 1; i <= ec_slavecount; i++)
    {
-      strcpy(strMsg, "[ECAT] Slave Id#");
-      snprintf(strTmp, sizeof(strTmp), "%d", i); strcat(strMsg, strTmp);
-      strcat(strMsg, " Name=");
-      strcat(strMsg, ec_slave[i].name);
+      snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave Id#%d Name=%s", i, ec_slave[i].name);
       logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
    }
 
    // Init IOMap
-   ec_config_map(&IOMap);
+   ec_config_map(cfgEcat->IOMap);
    ec_configdc();
 
    // Set the EtherCAT network at SAFE_OP
    ec_statecheck(0, EC_STATE_SAFE_OP,  EC_TIMEOUTSTATE * 4);
+
+   cfgEcat->expectedWkc = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
+   snprintf(strMsg, sizeof(strMsg), "Expected working counter Wkc of ECAT: %d",  cfgEcat->expectedWkc);
+   logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
 
    // Set the EtherCAT network at OP
    ec_slave[0].state = EC_STATE_OPERATIONAL;
@@ -82,7 +80,7 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
    if (ec_slave[0].state != EC_STATE_OPERATIONAL)
    {
       if (cntRetry)
-      logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "[ECAT] Timeout expired and ECAT has been initialized fail. Not all slave(s) in OP state");
+         logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, "[ECAT] Timeout expired and ECAT has been initialized fail. Not all slave(s) in OP state");
       return 1;
    }
    logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, "Load and init ECAT communication successfully. All slave(s) in OP state");
