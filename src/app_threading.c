@@ -6,7 +6,6 @@
 #define IO_TASK_ECATDIAG_us 100
 
 extern int  OpMode, preOpMode;
-extern char strMsg[250], strTmp[100];
 
 uint8_t stsUpdateVal = FALSE;
 uint8_t LED21 = 0x01;
@@ -16,6 +15,9 @@ extern cfgEcat   cfgEcatJson;
 
 // Function for Thread #1 IO Scanning Task
 void *Thread_IoTask(void *threadid) {
+
+    char strMsg[250];
+
     uint8_t i, j, oloop, iloop;
     uint8_t preWkc = 0;
 
@@ -53,8 +55,8 @@ void *Thread_IoTask(void *threadid) {
 
                     // if (( curWkc >= 3) && ((oloop > 0) || (iloop > 0)))
                     // {
-                    //     snprintf(strTmp, sizeof(strTmp), "[THRD=1] [id=%d] [slv=%s] [wkc=%d] [O=]", i, ec_slave[i].name, curWkc);
-                    //     strcat(strMsg, strTmp);
+                    //     char strTmp[100];
+                    //     snprintf(strMsg, sizeof(strMsg), "[THRD=1] [id=%d] [slv=%s] [wkc=%d] [O=]", i, ec_slave[i].name, curWkc);
                     //     for(j = 0; j < oloop; j++)
                     //     {
                     //         snprintf(strTmp, sizeof(strTmp), "%3.2x", ec_slave[i].outputs[j]);

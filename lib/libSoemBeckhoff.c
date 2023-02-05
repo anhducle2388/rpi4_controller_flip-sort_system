@@ -1,7 +1,5 @@
 #include "lib/libSoemBeckhoff.h"
 
-extern char strMsg[250], strTmp[100];
-
 int getJsonEcatComm(cfgEcat *cfgEcat) {
 
    json_object *cfgEcatObj = json_object_from_file(ECAT_SOEM_CONFG);
@@ -27,6 +25,7 @@ int getJsonEcatComm(cfgEcat *cfgEcat) {
 int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
 
    uint8_t cntRetry = ECAT_INIT_RETRY;
+   char    strMsg[250];
 
    // Init ECAT lib and context
    if (ec_init(cfgEcat->ifname) == 0 )

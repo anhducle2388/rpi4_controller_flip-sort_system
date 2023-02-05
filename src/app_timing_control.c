@@ -10,13 +10,12 @@
 #define COMMAND_HOME    2
 
 extern int  OpMode, preOpMode;
-extern char strMsg[250];
-extern char strTmp[100];
 
 int execTimingProgram(void) {
     /*
     Routined program execution - Control interval is defined in INTERVAL_IN_MSEC
     */
+    char strMsg[250];
 
     #ifdef DEBUG_INTERVAL
     logTsMsg(LOG_MSG, TIME_LPATH, "");
