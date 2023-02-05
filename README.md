@@ -15,11 +15,12 @@ make
 ### 2.2 Run App
 - Run below cmd to run the application:
 ```
-nohup sudo ./bin/app
+bash exec.sh
 ```
 - Run below cmd to exit the application:
-  - `htop` and find corresponding PID of `./bin/app`
-  - 'ps kill -9 <<<PID>>>' to kill the program.
+```
+bash exit.sh
+```
 ## 3. Features
 - Ethercat Comm with Beckhoff Ethercat Remote IO.
 
