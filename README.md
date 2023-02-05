@@ -34,5 +34,5 @@ bash exit.sh
   - [ ] IO Digital/Analog Mapping List.
 - [x] Add threading control for task scheduling between timing control and other communication.
 - [x] Add Ethercat to comm with Ethernet Remote IO.
-- [ ] Add Ethercat to comm with Ethernet Remote IO. -> Able to comm by Ethercat so depriotize to dev for Modbus TCP.
+- [ ] Add MOdbus TCP to comm with Ethernet Remote IO. -> Able to comm by Ethercat so depriotize.
 - [ ] Logging handler to avoid CPU overload. -> Consider to use syslog or update libLogHandler to load buffer to RAM and write by batch to avoid CPU overload.
