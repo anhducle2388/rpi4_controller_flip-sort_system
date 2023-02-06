@@ -25,6 +25,7 @@ void *Thread_IoTask(void *threadid) {
     do_KL2134_1->data_frame = 0x01;
 
     retGoto_Thread1:
+    ec_send_processdata();
     cfgEcatJson.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
     if (ec_slave[0].state == EC_STATE_OPERATIONAL) 
     {
@@ -33,7 +34,7 @@ void *Thread_IoTask(void *threadid) {
 
         }
     }
-    ec_send_processdata();
+    
     usleep(IO_TASK_INTERVAL_uS);
     goto retGoto_Thread1;
 }
