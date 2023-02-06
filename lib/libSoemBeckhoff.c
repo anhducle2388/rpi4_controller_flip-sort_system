@@ -93,11 +93,14 @@ int chkEcatDiagnosis(cfgEcat * cfgEcat)
 {
    #define EC_TIMEOUTMON 500
    char strMsg[250];
+   static preWkc = 0;
 
-   if ( ((ec_group[0].docheckstate) || (cfgEcat->expectedWkc > cfgEcat->curWkc)) && (cfgEcat->isRun == TRUE) )
+   if ( ((ec_group[0].docheckstate) || (cfgEcat->curWkc < cfgEcat->expectedWkc)) && (cfgEcat->isRun == TRUE) )
    {
-      snprintf(strMsg, sizeof(strMsg), "[ECAT] Oone ore more slaves are not responding");
-      logTsMsg(ERR_MSG, OPER_LPATH, strMsg);
+      if (preWkc != cfgEcat->curWkc) {
+         snprintf(strMsg, sizeof(strMsg), "[ECAT] One ore more slaves are not responding. Wkc = %d, Expected Wkc = %d", cfgEcat->curWkc, cfgEcat->expectedWkc);
+         logTsMsg(ERR_MSG, OPER_LPATH, strMsg);
+      }
 
       ec_group[0].docheckstate = FALSE;
       ec_readstate();
@@ -109,15 +112,15 @@ int chkEcatDiagnosis(cfgEcat * cfgEcat)
             ec_group[0].docheckstate = TRUE;
             if (ec_slave[i].state == (EC_STATE_SAFE_OP + EC_STATE_ERROR))
             {
-               snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave %d is in SAFE_OP + ERROR, attempting ack.", i);
+               snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave %d %s is in SAFE_OP + ERROR, attempting ack", i, ec_slave[i].name);
                logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, strMsg);
                ec_slave[i].state = (EC_STATE_SAFE_OP + EC_STATE_ACK);
                ec_writestate(i);
             }
             else if(ec_slave[i].state == EC_STATE_SAFE_OP)
             {
-               snprintf(strMsg, sizeof(strMsg), "[ECAT] WARNING: slave %d is in SAFE_OP, change to OPERATIONAL.", i);
-               logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, strMsg);
+               snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave %d %s is in SAFE_OP, change to OPERATIONAL", i, ec_slave[i].name);
+               logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
                ec_slave[i].state = EC_STATE_OPERATIONAL;
                ec_writestate(i);
             }
@@ -126,8 +129,8 @@ int chkEcatDiagnosis(cfgEcat * cfgEcat)
                if (ec_reconfig_slave(i, EC_TIMEOUTMON))
                {
                   ec_slave[i].islost = FALSE;
-                  snprintf(strMsg, sizeof(strMsg), "[ECAT] MESSAGE: slave %d reconfigured", i);
-                  logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, strMsg);
+                  snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave %d %s reconfigured", i, ec_slave[i].name);
+                  logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
                }
             }
             else if(!ec_slave[i].islost)
@@ -137,7 +140,7 @@ int chkEcatDiagnosis(cfgEcat * cfgEcat)
                if (ec_slave[i].state == EC_STATE_NONE)
                {
                   ec_slave[i].islost = TRUE;
-                  snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave %d lost", i);
+                  snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave %d %s lost", i, ec_slave[i].name);
                   logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, strMsg);
                }
             }
@@ -149,23 +152,53 @@ int chkEcatDiagnosis(cfgEcat * cfgEcat)
                if (ec_recover_slave(i, EC_TIMEOUTMON))
                {
                   ec_slave[i].islost = FALSE;
-                  snprintf(strMsg, sizeof(strMsg), "[ECAT] MESSAGE : slave %d recovered", i);
-                  logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, strMsg);
+                  snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave %d %s recovered", i, ec_slave[i].name);
+                  logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
                }
             }
             else
             {
                ec_slave[i].islost = FALSE;
-               snprintf(strMsg, sizeof(strMsg), "[ECAT] MESSAGE : slave %d found", i);
-               logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, strMsg);
+               snprintf(strMsg, sizeof(strMsg), "[ECAT] Slave %d %s found", i, ec_slave[i].name);
+               logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
             }
          }
       }
       if(!ec_group[0].docheckstate)
-      {         
-         snprintf(strMsg, sizeof(strMsg), "[ECAT] OK : all slaves resumed OPERATIONAL.");
-         logTsMsg(ERR_MSG, ECAT_SOEM_LPATH, strMsg);
+      {        
+         snprintf(strMsg, sizeof(strMsg), "[ECAT] All slaves resumed OPERATIONAL");
+         logTsMsg(LOG_MSG, ECAT_SOEM_LPATH, strMsg);
       }
+   }
+   preWkc = cfgEcat->curWkc;
+   return 0;
+}
+
+int getEcatIoFrame(cfgEcat * cfgEcat) 
+{
+   for (uint8_t i = 1; i <= ec_slavecount; i++)
+   {
+      uint8_t oloop = ec_slave[i].Obytes;
+      uint8_t iloop = ec_slave[i].Ibytes;
+      char    strMsg[500], strTmp[100];
+
+      if (( cfgEcat->curWkc >= cfgEcat->expectedWkc) && ((oloop > 0) || (iloop > 0)))
+      {
+         snprintf(strMsg, sizeof(strMsg), "[id=%d] [slv=%s] [O=]", i, ec_slave[i].name);
+         for(uint8_t j = 0; j < oloop; j++)
+         {
+            snprintf(strTmp, sizeof(strTmp), "%3.2x", ec_slave[i].outputs[j]);
+            strcat(strMsg, strTmp);
+         }
+
+         strcat(strMsg, " [I=]");
+         for(uint8_t j = 0; j < iloop; j++)
+         {
+            snprintf(strTmp, sizeof(strTmp), "%3.2x", ec_slave[i].inputs[j]);
+            strcat(strMsg, strTmp);
+         }
+         logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
+      }  
    }
    return 0;
 }
