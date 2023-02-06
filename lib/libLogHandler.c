@@ -21,7 +21,7 @@ void logTsMsg(char *mode, char *fpath, char *msg) {
     fclose(fptr);
 
     // Print out to terminal
-    if (strcmp(mode, LOG_MSG) == 0) {        
+    if ((strcmp(mode, LOG_MSG) == 0) || (strcmp(mode, ERR_MSG) == 0)) {        
         printf("%s.%03d ", tmpMsg, curTsMs % 1000);
         printf("%s %s.\n", mode, msg);
     }
