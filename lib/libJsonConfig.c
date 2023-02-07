@@ -1,6 +1,6 @@
 #include "./lib/libJsonConfig.h"
 
-int getDeviceCalibParams(char *devName,char *paramName, double *retVar) {
+int getDeviceCalibParams(char *devName, char *paramName, double *retVar) {
 
     json_object *logCalData = json_object_from_file(DEVICE_CALIB_LOG);
     json_object *devInstance, *paramVal, *paramDat, *calDate;

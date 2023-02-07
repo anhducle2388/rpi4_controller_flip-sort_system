@@ -1,50 +1,46 @@
 #include "app_timing_control.h"
+#include "app.h"
+
 #include "./lib/libLogHandler.h"
+#include "./lib/libSoemBeckhoff.h"
 
-#define OPMODE_STOP     0
-#define OPMODE_OPER     1
-#define OPMODE_HOME     2
 
-#define COMMAND_STOP    0
-#define COMMAND_OPER    1
-#define COMMAND_HOME    2
-
-extern int  OpMode, preOpMode;
+extern cfgOper cfgAppInst;
+extern cfgEcat cfgEcatJson;
 
 int execTimingProgram(void) {
-    /*
-    Routined program execution - Control interval is defined in INTERVAL_IN_MSEC
-    */
-    char strMsg[250];
+    // Routined program execution - Control interval is defined in INTERVAL_IN_MSEC
+    char   strMsg[250];
+    static uint8_t preOpMode = MODE_STOP;
 
-    #ifdef DEBUG_INTERVAL
-    logTsMsg(LOG_MSG, TIME_LPATH, "");
+    #ifndef DEBUG_EXECUTE_INTERVAL 
+    getEcatIoFrame(&cfgEcatJson);
     #endif
 
-    if(preOpMode != OpMode)
+    if(preOpMode != cfgAppInst.OperationMode.sts)
     {
-        snprintf(strMsg, sizeof(strMsg), "OpMode has been changed from %d to %d", preOpMode, OpMode);
+        snprintf(strMsg, sizeof(strMsg), "OpMode has been changed from %d to %d", preOpMode, cfgAppInst.OperationMode.sts);
         logTsMsg(LOG_MSG, OPER_LPATH, strMsg);
     }
 
-    switch (OpMode)
+    switch (cfgAppInst.OperationMode.sts)
     {
-    case OPMODE_STOP:
-        // logTsMsg(DBG_MSG, OPER_LPATH, "Operation Mode = STOP");
+    case MODE_STOP:
         break;
 
-    case OPMODE_HOME:
-        // logTsMsg(DBG_MSG, OPER_LPATH, "Operation Mode = HOME");
+    case MODE_OPER:
         break;
 
-    case OPMODE_OPER:
-        // logTsMsg(DBG_MSG, OPER_LPATH, "Operation Mode = OPER");
+    case MODE_HOME:
+        break;
+
+    case MODE_ERRO:
         break;
 
     default:
         break;
     }
     
-    preOpMode = OpMode;
+    preOpMode = cfgAppInst.OperationMode.sts;
     return 0;
 }

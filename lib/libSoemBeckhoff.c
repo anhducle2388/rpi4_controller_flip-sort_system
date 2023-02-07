@@ -1,4 +1,5 @@
 #include "lib/libSoemBeckhoff.h"
+#include "src/app.h"
 
 int getJsonEcatComm(cfgEcat *cfgEcat) {
 
@@ -187,11 +188,9 @@ int getEcatIoFrame(cfgEcat * cfgEcat)
 
       oloop = ec_slave[i].Obytes;
       if ((oloop == 0) && (ec_slave[i].Obits > 0)) oloop = 1;
-      // if (oloop > 8) oloop = 8;
 
       iloop = ec_slave[i].Ibytes;
       if ((iloop == 0) && (ec_slave[i].Ibits > 0)) iloop = 1;
-      // if (iloop > 8) iloop = 8;
 
       char    strMsg[500], strTmp[100];
 
@@ -210,7 +209,7 @@ int getEcatIoFrame(cfgEcat * cfgEcat)
             snprintf(strTmp, sizeof(strTmp), "%3.2x", ec_slave[i].inputs[j]);
             strcat(strMsg, strTmp);
          }
-         logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
+         logTsMsg(DBG_MSG, EXEC_LPATH, strMsg);
       }  
    }
    return 0;

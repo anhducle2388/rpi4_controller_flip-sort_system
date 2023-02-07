@@ -2,8 +2,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <ethercat.h>
-#include <lib/libJsonConfig.h>
-#include <lib/libLogHandler.h>
+#include "lib/libJsonConfig.h"
+#include "lib/libLogHandler.h"
 
 #define ECAT_SOEM_CONFG   "./dat/comm_ecat.json"
 #define ECAT_SOEM_LPATH   "./log/log_comm.txt"
@@ -14,10 +14,10 @@
 typedef struct {
    char const *ifname;
    uint8_t     numOfNodes;
-   uint8_t    IOMap[ECAT_IOMAP_BUFFER];
-   int8_t    curWkc;
-   uint8_t    expectedWkc;
-   uint8_t    isRun;
+   uint8_t     IOMap[ECAT_IOMAP_BUFFER];
+   uint8_t     isRun;
+   int8_t      curWkc;
+   int8_t      expectedWkc;
 } cfgEcat;
 
 int getJsonEcatComm(cfgEcat * cfgEcat);

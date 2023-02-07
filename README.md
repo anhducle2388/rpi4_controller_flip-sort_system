@@ -15,11 +15,11 @@ make
 ### 2.2 Run App
 - Run below cmd to run the application:
 ```
-bash start.sh
+bash ./script/start.sh
 ```
 - Run below cmd to exit the application:
 ```
-bash stop.sh
+bash ./script/stop.sh
 ```
 ## 3. Features
 - Ethercat Comm with Beckhoff Ethercat Remote IO.

@@ -8,37 +8,25 @@
 
 #include "app_timing_control.h"
 #include "app_threading.h"
+#include "app.h"
 
 #include "lib/libLogHandler.h"
 #include "lib/libJsonConfig.h"
 
-#ifdef NUM_THREADS
-   #define NUM_THREADS         3
-#endif
-
-#ifdef INTERVAL_IN_MSEC
-    #define INTERVAL_IN_MSEC   50
-#endif
-
-#define OPMODE_STOP     0
-#define OPMODE_RUN      1
-#define OPMODE_HOME     2
-
-#define COMMAND_STOP    0
-#define COMMAND_OPER    1
-#define COMMAND_HOME    2
-
 // Dev-defined Functions
-
 int getInstatnceStatus(void);
 int getJsonDeviceCfg(void);
 int cfgHdwrGpio(void);
 int cfgSftwGpio(void);
 int cfgInteruptTimer(void);
 
-int OpMode = OPMODE_STOP, preOpMode;
+cfgOper   cfgAppInst  = { 
+    .OperationMode.sts = MODE_STOP, 
+    .OperationMode.cmd = MODE_STOP
+    };
 
-cfgEcat   cfgEcatJson;
+cfgEcat   cfgEcatJson = {
+    };
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */
@@ -56,6 +44,7 @@ int main(void) {
     */
 
     system("clear");
+
     if (getInstatnceStatus() == 0) {
 
         getJsonDeviceCfg();
@@ -69,7 +58,7 @@ int main(void) {
 
         logTsMsg(LOG_MSG, OPER_LPATH, "Complete initializing program");
         
-        OpMode = OPMODE_RUN;
+        cfgAppInst.OperationMode.sts = MODE_OPER;
 
         // Main loop program
         while(1)
@@ -150,6 +139,6 @@ int cfgSftwGpio(void) {
 int cfgInteruptTimer() {
     // Config routine uAlarm singal to execute execTimingProgram() in precise interval timing
     signal(SIGALRM, execTimingProgram);   
-    ualarm(INTERVAL_IN_MSEC * 1000, INTERVAL_IN_MSEC * 1000);
+    ualarm(EXECUTE_INTERVAL_ms * 1000, EXECUTE_INTERVAL_ms * 1000);
     return 0;
 }

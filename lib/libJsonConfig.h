@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <json-c/json.h>
 #include <time.h>
+#include <json-c/json.h>
 #include <sys/time.h>
 
 #define DEVICE_CALIB_LOG "./dat/device_calib.json"

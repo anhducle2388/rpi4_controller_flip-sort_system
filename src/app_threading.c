@@ -1,12 +1,12 @@
 #include "app_threading.h"
+#include "app.h"
 
 #define NUM_THREADS 3
 
 #define IO_TASK_INTERVAL_uS 1000
 #define IO_TASK_ECATDIAG_us 100
 
-extern int  OpMode, preOpMode;
-
+extern cfgOper cfgAppInst;
 extern cfgEcat cfgEcatJson;
 
 ddo_KL2134t * ddo_KL2134_12;
@@ -18,6 +18,7 @@ ai_KL3202t  * ai_KL3202_1;
 
 // User defined function for user variable to Io Mapping
 void setUserVariableToIoMapping(void) {
+
     /* [slv=BK1120] [Phs]  [BK1120] -> [DO1|DO2|DO3|DO4] ->  [DI1|DI2|DI3|DI4] -> [AO] -> [AI]
                             __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ ___ ___ ___ ___
                     [Idx]  | 2| 3| 4| 5| 6| 7| 8| 9|10|11|12|13|14|15|16|17|     18|     19|
@@ -39,7 +40,7 @@ void setUserVariableToIoMapping(void) {
     ai_KL3202_1   = (ai_KL3202t *) &ec_slave[1].inputs[10];
 
     // Define IO port macro for later use
-    #define rly_TRIGGER_ON_1   ddo_KL2134_12->idx1_channel_1
+    #define rly_STATUS_LED   ddo_KL2134_12->idx1_channel_1
     #define rly_TRIGGER_ON_2   ddo_KL2134_34->idx1_channel_3
     #define snr_SAFETY_1       ddi_KL1104_12->idx1_channel_1
 
@@ -47,36 +48,35 @@ void setUserVariableToIoMapping(void) {
     #define val_TEMPERATURE_1  ai_KL3202_1->channel_1.data
 
     // Init state for Digital / Analog Output
-    rly_TRIGGER_ON_1 = TRUE;
+    rly_STATUS_LED = TRUE;
     rly_TRIGGER_ON_2 = TRUE;
 }
 
 // Function for Thread #1 IO Scanning Task
 void *Thread_IoTask(void *threadid) {
 
-    char strMsg[250];
     setUserVariableToIoMapping();
-
     retGoto_Thread1:
-    ec_send_processdata();
-    cfgEcatJson.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
-
-    if (ec_slave[0].state == EC_STATE_OPERATIONAL) 
-    {
-        for (uint8_t i = 1; i <= ec_slavecount; i++)
-        {
-
-        }
-    }
-    
-    usleep(IO_TASK_INTERVAL_uS);
+        // Send and recevie ECAT process data -> IOMap
+        ec_send_processdata();
+        cfgEcatJson.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
+        
+        // Sleep
+        usleep(IO_TASK_INTERVAL_uS);
     goto retGoto_Thread1;
 }
 
 // Function for Thread #2
 void *Thread_DiagComm(void *threadid) {
+
     retGoto_Thread2:
+        // Toggle to inducate tool still running
+        TOGGLE(rly_STATUS_LED);
+
+        // Ecat Diag
         chkEcatDiagnosis(&cfgEcatJson);
+
+        // Sleep
         usleep(IO_TASK_ECATDIAG_us);
     goto retGoto_Thread2;
 }
@@ -84,11 +84,11 @@ void *Thread_DiagComm(void *threadid) {
 // Function for Thread #3
 void *Thread_Handler(void *threadid) {
 
-    retGoto_Thread3: /*getEcatIoFrame(&cfgEcatJson);*/ 
+    retGoto_Thread3:
+        // Do something like Rest API handing and Database Logging.
         
-        TOGGLE(rly_TRIGGER_ON_1);
 
-        // Sleep to wait
+        // Sleep
         usleep(1000000);
 
     goto retGoto_Thread3;

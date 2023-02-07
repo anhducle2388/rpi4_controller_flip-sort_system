@@ -4,14 +4,14 @@ void logTsMsg(char *mode, char *fpath, char *msg) {
     
     static u_int32_t curTsMs = 0;
     struct timeval curTimeVal;
-    char   tmpMsg[128];
+    char   tmpMsg[300];
 
     // Get current timestamp in milisecs for return val + print timestamp and actual processing interval
     gettimeofday(&curTimeVal, NULL); 
 
     // Convert from usec to msec
     curTsMs = curTimeVal.tv_sec*1000LL + curTimeVal.tv_usec/1000; // calculate milliseconds
-    strftime(tmpMsg, 200, "%Y-%m-%d %H:%M:%S", localtime(&curTimeVal.tv_sec));
+    strftime(tmpMsg, 300, "%Y-%m-%d %H:%M:%S", localtime(&curTimeVal.tv_sec));
 
     // Save to log file
     FILE *fptr;
