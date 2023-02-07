@@ -70,9 +70,6 @@ void *Thread_IoTask(void *threadid) {
 void *Thread_DiagComm(void *threadid) {
 
     retGoto_Thread2:
-        // Toggle to inducate tool still running
-        TOGGLE(rly_STATUS_LED);
-
         // Ecat Diag
         chkEcatDiagnosis(&cfgEcatJson);
 
@@ -85,11 +82,17 @@ void *Thread_DiagComm(void *threadid) {
 void *Thread_Handler(void *threadid) {
 
     retGoto_Thread3:
+        // Toggle to inducate tool still running'
+        #ifdef DEBUG_IO_TASK_INTERVAL 
+        getEcatIoFrame(&cfgEcatJson);
+        #endif              
+        TOGGLE(rly_STATUS_LED);
+
         // Do something like Rest API handing and Database Logging.
-        
+  
 
         // Sleep
-        usleep(1000000);
+        usleep(5000000);
 
     goto retGoto_Thread3;
 }
@@ -104,21 +107,21 @@ int cfgThreadMap() {
     logTsMsg(LOG_MSG, OPER_LPATH, "Creating thread #1 Io task");
     if ( pthread_create(&threads[0], NULL, Thread_IoTask, NULL) ){
         logTsMsg(ERR_MSG, OPER_LPATH, "Error: unable to create thread #1 Io Task");
-        return 0;
+        return 1;
     }
 
     // Mapping thread #2 to map list
     logTsMsg(LOG_MSG, OPER_LPATH, "Creating thread #2 Io task diag");
     if ( pthread_create(&threads[1], NULL, Thread_DiagComm, NULL) ){
         logTsMsg(ERR_MSG, OPER_LPATH, "Error: unable to create thread #2 Io Task Diag");
-        return 0;
+        return 1;
     }
  
     // Mapping thread #2 to map list
     logTsMsg(LOG_MSG, OPER_LPATH, "Creating thread #3");
     if ( pthread_create(&threads[2], NULL, Thread_Handler, NULL) ){
         logTsMsg(ERR_MSG, OPER_LPATH, "Error: unable to create thread #3");
-        return 0;
+        return 1;
     }
 
     return 0;

@@ -13,14 +13,25 @@ int execTimingProgram(void) {
     char   strMsg[250];
     static uint8_t preOpMode = MODE_STOP;
 
-    #ifndef DEBUG_EXECUTE_INTERVAL 
-    getEcatIoFrame(&cfgEcatJson);
-    #endif
-
     if(preOpMode != cfgAppInst.OperationMode.sts)
     {
         snprintf(strMsg, sizeof(strMsg), "OpMode has been changed from %d to %d", preOpMode, cfgAppInst.OperationMode.sts);
         logTsMsg(LOG_MSG, OPER_LPATH, strMsg);
+    }
+
+    switch (cfgAppInst.OperationMode.cmd)
+    {
+    case MODE_STOP:
+        break;
+
+    case MODE_OPER:
+        break;
+
+    case MODE_HOME:
+        break;
+
+    case MODE_CALB:
+        break;
     }
 
     switch (cfgAppInst.OperationMode.sts)
@@ -33,11 +44,7 @@ int execTimingProgram(void) {
 
     case MODE_HOME:
         break;
-
-    case MODE_ERRO:
-        break;
-
-    default:
+    case MODE_CALB:
         break;
     }
     

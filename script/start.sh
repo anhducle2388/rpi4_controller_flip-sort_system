@@ -1,1 +1,3 @@
-nohup sudo ./bin/app > log/nohup.log &
+make
+nohup sudo ./bin/app > ./log/nohup.log &
+clear

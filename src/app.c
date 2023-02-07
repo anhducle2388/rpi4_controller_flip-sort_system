@@ -14,6 +14,7 @@
 #include "lib/libJsonConfig.h"
 
 // Dev-defined Functions
+
 int getInstatnceStatus(void);
 int getJsonDeviceCfg(void);
 int cfgHdwrGpio(void);
@@ -45,21 +46,31 @@ int main(void) {
 
     system("clear");
 
+    uint8_t err = 0;
+    uint8_t cntRetry = 5; 
+
+    // Check if another instances is running
     if (getInstatnceStatus() == 0) {
-
-        getJsonDeviceCfg();
-        getJsonEcatComm(&cfgEcatJson);
-        cfgHdwrEcatComm(&cfgEcatJson);   
         
-        cfgHdwrGpio();
-        cfgSftwGpio();
-        cfgInteruptTimer();
-        cfgThreadMap();
+        // Init the program with max INIT_RETRY_MAX times retry
+        do {
+            err += getJsonDeviceCfg();
+            err += getJsonEcatComm(&cfgEcatJson);
+            err += cfgHdwrEcatComm(&cfgEcatJson);   
+            
+            err += cfgHdwrGpio();
+            err += cfgSftwGpio();
+            err += cfgInteruptTimer();
+            err += cfgThreadMap();
+        }
+        while (err && (cntRetry--));
 
-        logTsMsg(LOG_MSG, OPER_LPATH, "Complete initializing program");
+        // Switch program state to Operation or Fail
+        if (!err) {
+            logTsMsg(LOG_MSG, OPER_LPATH, "Complete initializing program");
+            cfgAppInst.OperationMode.sts = MODE_OPER;
+        }
         
-        cfgAppInst.OperationMode.sts = MODE_OPER;
-
         // Main loop program
         while(1)
         {
@@ -127,8 +138,6 @@ int getJsonDeviceCfg(void) {
 
 int cfgHdwrGpio(void) {
     wiringPiSetupPhys();
-    pinMode(40, OUTPUT);
-    pinMode(38, OUTPUT);
     return 0;
 }
 
