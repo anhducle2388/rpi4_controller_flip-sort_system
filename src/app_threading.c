@@ -9,24 +9,58 @@ extern int  OpMode, preOpMode;
 
 extern cfgEcat cfgEcatJson;
 
-do_KL2134t * do_KL2134_1, * do_KL2134_3;
-di_KL1104t * di_KL1104_1, * di_KL1104_3;
-ao_KL4002t * ao_KL4002;
-ai_KL3202t * ai_KL3202;
+ddo_KL2134t * ddo_KL2134_12;
+ddo_KL2134t * ddo_KL2134_34;
+ddi_KL1104t * ddi_KL1104_12;
+ddi_KL1104t * ddi_KL1104_34;
+ao_KL4002t  * ao_KL4002_1;
+ai_KL3202t  * ai_KL3202_1;
+
+// User defined function for user variable to Io Mapping
+void setUserVariableToIoMapping(void) {
+    /* [slv=BK1120] [Phs]  [BK1120] -> [DO1|DO2|DO3|DO4] ->  [DI1|DI2|DI3|DI4] -> [AO] -> [AI]
+                            __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ ___ ___ ___ ___
+                    [Idx]  | 2| 3| 4| 5| 6| 7| 8| 9|10|11|12|13|14|15|16|17|     18|     19|
+                    [Out]  |00 00 00 00|00 00 00 00|00 00 00 00|00 00 00 00|  0   8|  0   0|   From Master to Slave
+                           |  AO_CH1   |  AO_CH2   |   AI_CH1  |   AI_CH2  |DO2-DO1|DO4-DO3|
+                           |CT __ BH BL|CT __ BH BL|CT __ __ __|CT __ __ __|___ ___ ___ ___|
+                    [In]   |00 00 00 00|00 00 00 00|42 00 34 21|42 00 34 21|  0|  0|  0|  0|   From Slave  to Master
+                           |  AO_CH1   |  AO_CH2   |   AI_CH1  |   AI_CH2  |DI2-DI1|DI4-DI3|
+                           |__ __ __ __|__ __ __ __|ST __ BH BL|ST __ BH BL|___ ___ ___ ___|
+    */
+    
+    // Function to define struct pointer to IO Map and config/init value
+    ddo_KL2134_12 = (ddo_KL2134t *) &ec_slave[1].outputs[18];
+    ddo_KL2134_34 = (ddo_KL2134t *) &ec_slave[1].outputs[19];
+    ao_KL4002_1   = (ao_KL4002t *) &ec_slave[1].outputs[6];
+
+    ddi_KL1104_12 = (ddi_KL1104t *) &ec_slave[1].inputs[18];
+    ddi_KL1104_34 = (ddi_KL1104t *) &ec_slave[1].inputs[19];
+    ai_KL3202_1   = (ai_KL3202t *) &ec_slave[1].inputs[10];
+
+    // Define IO port macro for later use
+    #define rly_TRIGGER_ON_1   ddo_KL2134_12->idx1_channel_1
+    #define rly_TRIGGER_ON_2   ddo_KL2134_34->idx1_channel_3
+    #define snr_SAFETY_1       ddi_KL1104_12->idx1_channel_1
+
+    #define sts_TEMPERATURE_1  ai_KL3202_1->channel_2.stts
+    #define val_TEMPERATURE_1  ai_KL3202_1->channel_1.data
+
+    // Init state for Digital / Analog Output
+    rly_TRIGGER_ON_1 = TRUE;
+    rly_TRIGGER_ON_2 = TRUE;
+}
 
 // Function for Thread #1 IO Scanning Task
 void *Thread_IoTask(void *threadid) {
 
     char strMsg[250];
-
-    do_KL2134_1 = (do_KL2134t *) ec_slave[1].outputs + ec_slave[1].Obytes-2;
-    do_KL2134_3 = (do_KL2134t *) ec_slave[1].outputs + ec_slave[1].Obytes-1;
-
-    do_KL2134_1->data_frame = 0x01;
+    setUserVariableToIoMapping();
 
     retGoto_Thread1:
     ec_send_processdata();
     cfgEcatJson.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
+
     if (ec_slave[0].state == EC_STATE_OPERATIONAL) 
     {
         for (uint8_t i = 1; i <= ec_slavecount; i++)
@@ -50,13 +84,12 @@ void *Thread_DiagComm(void *threadid) {
 // Function for Thread #3
 void *Thread_Handler(void *threadid) {
 
-    retGoto_Thread3:
-    // Tasking
-    // getEcatIoFrame(&cfgEcatJson);
-    do_KL2134_1->data_frame = ( do_KL2134_1->data_frame >> 1) | ( do_KL2134_1->data_frame << (4 - 1));
+    retGoto_Thread3: /*getEcatIoFrame(&cfgEcatJson);*/ 
+        
+        TOGGLE(rly_TRIGGER_ON_1);
 
-    // Sleep to wait
-    usleep(1000000);
+        // Sleep to wait
+        usleep(1000000);
 
     goto retGoto_Thread3;
 }

@@ -54,7 +54,12 @@ int cfgHdwrEcatComm(cfgEcat * cfgEcat) {
    }
 
    // Init IOMap
-   ec_config_map(cfgEcat->IOMap);
+   uint8_t usedMem = ec_config_map(cfgEcat->IOMap);
+   snprintf(strMsg, sizeof(strMsg), "[ECAT] ECAT network used %d byte(s) in IOMap", usedMem-4); 
+      // Exclude first dummy word ~ 2 bytes at beginning of each input and output frame
+      // For actual iomap allocation mapping with io module -> Refer to Process Data Mapping section of coupler. Ie: BK1250
+   logTsMsg(DBG_MSG, ECAT_SOEM_LPATH, strMsg);
+
    ec_configdc();
 
    // Set the EtherCAT network at SAFE_OP
@@ -178,21 +183,29 @@ int getEcatIoFrame(cfgEcat * cfgEcat)
 {
    for (uint8_t i = 1; i <= ec_slavecount; i++)
    {
-      uint8_t oloop = ec_slave[i].Obytes;
-      uint8_t iloop = ec_slave[i].Ibytes;
+      uint8_t oloop, iloop;
+
+      oloop = ec_slave[i].Obytes;
+      if ((oloop == 0) && (ec_slave[i].Obits > 0)) oloop = 1;
+      // if (oloop > 8) oloop = 8;
+
+      iloop = ec_slave[i].Ibytes;
+      if ((iloop == 0) && (ec_slave[i].Ibits > 0)) iloop = 1;
+      // if (iloop > 8) iloop = 8;
+
       char    strMsg[500], strTmp[100];
 
       if (( cfgEcat->curWkc >= cfgEcat->expectedWkc) && ((oloop > 0) || (iloop > 0)))
       {
          snprintf(strMsg, sizeof(strMsg), "[id=%d] [slv=%s] [O=]", i, ec_slave[i].name);
-         for(uint8_t j = 0; j < oloop; j++)
+         for(uint8_t j = 2; j < oloop; j++)
          {
             snprintf(strTmp, sizeof(strTmp), "%3.2x", ec_slave[i].outputs[j]);
             strcat(strMsg, strTmp);
          }
 
          strcat(strMsg, " [I=]");
-         for(uint8_t j = 0; j < iloop; j++)
+         for(uint8_t j = 2; j < iloop; j++)
          {
             snprintf(strTmp, sizeof(strTmp), "%3.2x", ec_slave[i].inputs[j]);
             strcat(strMsg, strTmp);
