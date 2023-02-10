@@ -2,8 +2,10 @@
 ### Control Program
 
 ## 1. Hardware:
-- Raspi 4B with 4GB Ram.
-- Control with interval `10ms` and based on benchtest can run upto 10.000 line of codes.
+- Raspi 4B with 4GB RAM.
+- Control with interval upto `1ms`.
+- IO Configuration: 
+  - Beckhoff Remote IO BK1120 + DIOs + AIOs via Ethercat Protocol
 
 ## 2. Build/Run App Instruction:
 ### 2.1. Build App
@@ -23,17 +25,23 @@ bash ./script/stop.sh
 ```
 ## 3. Features
 - Ethercat Comm with Beckhoff Ethercat Remote IO.
+- API Server Endpoint by Mongoose 7.9.
 
 ## 4. Results
 - Ethercat Comm with Beckhoff Ethercat Remote IO with delay 1ms without logging.
 
 ## 5. TODOs
 - [ ] IO Configuration with IO pin map for controling.
-  - [ ] Focus on loadcell readings, transfering from Msp430 module code to Raspi 4.
-    - [ ] Beckhoff KL3202 has conversion time ~ 250 ms -> Consider another module for faster AI conversion.
   - [x] Dev function to Rd/Wr Io more easily via Ethercat.
   - [x] IO Digital/Analog Mapping List.
+  - [ ] Beckhoff KL3202 has conversion time ~ 250 ms -> Consider another module for faster AI conversion.
+
 - [x] Add threading control for task scheduling between timing control and other communication.
 - [x] Add Ethercat to comm with Ethernet Remote IO.
-  - [ ] Add Modbus TCP/IP to comm with Ethernet Remote IO. -> Able to comm by Ethercat so depriotize Modbus TCP/IP.
-- [ ] Logging handler to avoid CPU overload. -> Consider to use syslog or update libLogHandler to load buffer to RAM and write by batch to avoid CPU overload.
+  - [ ] Add Modbus TCP/IP to comm with Ethernet Remote IO. -> depriotize Modbus TCP/IP.
+- [ ] Logging handler to avoid CPU overload. -> Reduce log rate so depriotize.
+
+- [ ] Setup API Endpoint Server configure to comm between Web Frontend UI with Controller Program.
+   - [x] Library: Mongoose 7.9 Http Restful Server Example.
+   - [ ] Listing APIs to support data uploaded.
+   - [ ] Develop APIs.
