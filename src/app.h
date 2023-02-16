@@ -9,12 +9,15 @@
 #define OPER_LPATH   "./log/log_oper.txt"
 #define EXEC_LPATH   "./log/log_exec.txt"
 
+#ifndef APP_STRUCT
 typedef struct {
    struct {
       uint8_t sts;
       uint8_t cmd;
    } OperationMode;
 } cfgOper;
+#define APP_STRUCT
+#endif
 
 #define MODE_STOP    0
 #define MODE_OPER    1

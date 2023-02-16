@@ -12,6 +12,8 @@
 
 #include "lib/libLogHandler.h"
 #include "lib/libJsonConfig.h"
+#include "lib/libZeroMqComm.h"
+#include "lib/libSoemBeckhoff.h"
 
 // Dev-defined Functions
 
@@ -28,6 +30,12 @@ cfgOper   cfgAppInst  = {
 
 cfgEcat   cfgEcatJson = {
     };
+
+cfgZmq    cfgZmqInst  = {
+    };
+
+void * zmqCtx;
+void * zmqSkt;
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */
@@ -47,7 +55,12 @@ int main(void) {
     system("clear");
 
     uint8_t err = 0;
-    uint8_t cntRetry = 5; 
+    uint8_t cntRetry = 1; 
+
+    // Init ZeroMq Socket
+    zmqCtx = zmq_ctx_new();
+    zmqSkt = zmq_socket(zmqCtx, ZMQ_REP);
+    zmq_bind(zmqSkt, "tcp://*:5555");
 
     // Check if another instances is running
     if (getInstatnceStatus() == 0) {
@@ -56,14 +69,14 @@ int main(void) {
         do {
             err += getJsonDeviceCfg();
             err += getJsonEcatComm(&cfgEcatJson);
-            err += cfgHdwrEcatComm(&cfgEcatJson);   
-            
+            err += cfgHdwrEcatComm(&cfgEcatJson);
+
             err += cfgHdwrGpio();
             err += cfgSftwGpio();
             err += cfgInteruptTimer();
             err += cfgThreadMap();
         }
-        while (err && (cntRetry--));
+        while (FALSE); //(err && (cntRetry--));
 
         // Switch program state to Operation or Fail
         if (!err) {
@@ -74,9 +87,18 @@ int main(void) {
         // Main loop program
         while(1)
         {
-            
+            int retval;
+            getIntZmqVal(zmqSkt, "python", &retval);
+            setIntZmqVal(zmqSkt, "c", 20);
+            printf("retval = %d\n", retval);
+            usleep(10);
         }
+
+        // Exit program
         pthread_exit(NULL);
+        zmq_close(zmqSkt);
+        zmq_ctx_destroy(zmqCtx);
+        
         return 0;
     }
     else 

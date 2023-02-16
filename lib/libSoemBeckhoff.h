@@ -11,6 +11,11 @@
 
 #define ECAT_IOMAP_BUFFER  4096
 
+#define LO 0
+#define HI 1
+#define TOGGLE(x) x=x?LO:HI
+
+#ifndef ECAT_FRAME_STRUCT
 typedef struct {
    char const *ifname;
    uint8_t     numOfNodes;
@@ -20,18 +25,8 @@ typedef struct {
    int8_t      expectedWkc;
 } cfgEcat;
 
-int getJsonEcatComm(cfgEcat * cfgEcat);
-int cfgHdwrEcatComm(cfgEcat * cfgEcat);
-int chkEcatDiagnosis(cfgEcat * cfgEcat);
-int getEcatIoFrame(cfgEcat * cfgEcat);
-
 // Beckhoff BK1250 Process In/Out Image Example
 // https://download.beckhoff.com/download/document/io/bus-terminals/bk11x0_bk1250en.pdf -> Page 65
-
-#define LO 0
-#define HI 1
-#define TOGGLE(x) x=x?LO:HI
-
 // Sgle-4DO KL2134 module -> for odd number of KL2134 (4bit data)
 typedef union {
    uint8_t    data_frame : 4;
@@ -141,3 +136,13 @@ typedef union {
       } channel_2;
    } ;
 } ao_KL4002t;
+
+#define ECAT_FRAME_STRUCT
+#endif
+
+int getJsonEcatComm(cfgEcat * cfgEcat);
+int cfgHdwrEcatComm(cfgEcat * cfgEcat);
+int chkEcatDiagnosis(cfgEcat * cfgEcat);
+int getEcatIoFrame(cfgEcat * cfgEcat);
+
+

@@ -5,6 +5,7 @@
 
 #include "lib/libLogHandler.h"
 #include "lib/libSoemBeckhoff.h"
+#include "lib/libZeroMqComm.h"
 
 void *Thread_IoTask(void *threadid);
 void *Thread_DiagComm(void *threadid);

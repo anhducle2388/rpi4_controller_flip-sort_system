@@ -40,7 +40,7 @@ void setUserVariableToIoMapping(void) {
     ai_KL3202_1   = (ai_KL3202t *) &ec_slave[1].inputs[10];
 
     // Define IO port macro for later use
-    #define rly_STATUS_LED   ddo_KL2134_12->idx1_channel_1
+    #define rly_STATUS_LED     ddo_KL2134_12->idx1_channel_1
     #define rly_TRIGGER_ON_2   ddo_KL2134_34->idx1_channel_3
     #define snr_SAFETY_1       ddi_KL1104_12->idx1_channel_1
 
@@ -48,21 +48,26 @@ void setUserVariableToIoMapping(void) {
     #define val_TEMPERATURE_1  ai_KL3202_1->channel_1.data
 
     // Init state for Digital / Analog Output
-    rly_STATUS_LED = TRUE;
+    rly_STATUS_LED   = TRUE;
     rly_TRIGGER_ON_2 = TRUE;
 }
 
 // Function for Thread #1 IO Scanning Task
 void *Thread_IoTask(void *threadid) {
 
-    setUserVariableToIoMapping();
+    // setUserVariableToIoMapping();
+
     retGoto_Thread1:
-        // Send and recevie ECAT process data -> IOMap
-        ec_send_processdata();
-        cfgEcatJson.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
-        
-        // Sleep
-        usleep(IO_TASK_INTERVAL_uS);
+        if (cfgEcatJson.isRun == TRUE) 
+        {
+            printf("%d\n", cfgEcatJson.isRun);
+            // Send and recevie ECAT process data -> IOMap
+            ec_send_processdata();
+            cfgEcatJson.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
+            
+            // Sleep
+            usleep(IO_TASK_INTERVAL_uS);
+        }
     goto retGoto_Thread1;
 }
 
@@ -71,10 +76,11 @@ void *Thread_DiagComm(void *threadid) {
 
     retGoto_Thread2:
         // Ecat Diag
-        chkEcatDiagnosis(&cfgEcatJson);
-
-        // Sleep
-        usleep(IO_TASK_ECATDIAG_us);
+        if (cfgEcatJson.isRun == TRUE) 
+        {
+            chkEcatDiagnosis(&cfgEcatJson);
+            usleep(IO_TASK_ECATDIAG_us);
+        }
     goto retGoto_Thread2;
 }
 
@@ -83,13 +89,12 @@ void *Thread_Handler(void *threadid) {
 
     retGoto_Thread3:
         // Toggle to inducate tool still running'
-        #ifdef DEBUG_IO_TASK_INTERVAL 
-        getEcatIoFrame(&cfgEcatJson);
+        #ifdef DEBUG_IO_TASK_INTERVAL
+        // if (cfgEcatJson.isRun == TRUE) getEcatIoFrame(&cfgEcatJson);
+        // TOGGLE(rly_STATUS_LED);
         #endif              
-        TOGGLE(rly_STATUS_LED);
-
+        
         // Do something like Rest API handing and Database Logging.
-  
 
         // Sleep
         usleep(5000000);
