@@ -7,7 +7,8 @@
 #define IO_TASK_ECATDIAG_us 100
 
 extern cfgOper cfgAppInst;
-extern cfgEcat cfgEcatJson;
+extern cfgEcat cfgEcatInst;
+extern cfgZmq  cfgZmqInst;
 
 ddo_KL2134t * ddo_KL2134_12;
 ddo_KL2134t * ddo_KL2134_34;
@@ -58,12 +59,12 @@ void *Thread_IoTask(void *threadid) {
     // setUserVariableToIoMapping();
 
     retGoto_Thread1:
-        if (cfgEcatJson.isRun == TRUE) 
+        if (cfgEcatInst.isRun == TRUE) 
         {
-            printf("%d\n", cfgEcatJson.isRun);
+            printf("%d\n", cfgEcatInst.isRun);
             // Send and recevie ECAT process data -> IOMap
             ec_send_processdata();
-            cfgEcatJson.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
+            cfgEcatInst.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
             
             // Sleep
             usleep(IO_TASK_INTERVAL_uS);
@@ -76,9 +77,9 @@ void *Thread_DiagComm(void *threadid) {
 
     retGoto_Thread2:
         // Ecat Diag
-        if (cfgEcatJson.isRun == TRUE) 
+        if (cfgEcatInst.isRun == TRUE) 
         {
-            chkEcatDiagnosis(&cfgEcatJson);
+            chkEcatDiagnosis(&cfgEcatInst);
             usleep(IO_TASK_ECATDIAG_us);
         }
     goto retGoto_Thread2;
@@ -90,14 +91,23 @@ void *Thread_Handler(void *threadid) {
     retGoto_Thread3:
         // Toggle to inducate tool still running'
         #ifdef DEBUG_IO_TASK_INTERVAL
-        // if (cfgEcatJson.isRun == TRUE) getEcatIoFrame(&cfgEcatJson);
+        // if (cfgEcatInst.isRun == TRUE) getEcatIoFrame(&cfgEcatInst);
         // TOGGLE(rly_STATUS_LED);
         #endif              
         
         // Do something like Rest API handing and Database Logging.
+        if (cfgZmqInst.isRun == TRUE)
+        {
+            int retval;
+            
+            // Receive
+            getIntZmqVal(cfgZmqInst.ZmqSocket, "python", &retval);
 
+            // Sending
+            setIntZmqVal(cfgZmqInst.ZmqSocket, "c", 20);
+        }
         // Sleep
-        usleep(5000000);
+        usleep(1000000);
 
     goto retGoto_Thread3;
 }

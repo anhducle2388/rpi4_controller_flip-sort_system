@@ -1,5 +1,38 @@
 #include <lib/libZeroMqComm.h>
 
+int initZeroMq(cfgZmq * cfgZmq, char * ip_addr, int port)
+{
+    int err = 0;
+    char strMsg[250];
+    char strZmq[100];
+
+    cfgZmq->ZmqContext = zmq_ctx_new();
+    cfgZmq->ZmqSocket  = zmq_socket(cfgZmq->ZmqContext, ZMQ_REP);
+
+    snprintf(strZmq, sizeof(strZmq), "tcp://%s:%d", ip_addr, port);
+    err = zmq_bind(cfgZmq->ZmqSocket, strZmq);
+
+    if (err)
+    {
+        snprintf(strMsg, sizeof(strMsg), "Failed to init ZeroMq at %s:%d. Status = %d", ip_addr, port, err);
+        logTsMsg(ERR_MSG, OPER_LPATH, strMsg);
+        cfgZmq->isRun = FALSE;
+        return 1;
+    }
+    snprintf(strMsg, sizeof(strMsg), "Init ZeroMq successfully at %s:%d. Status = %d", ip_addr, port, err);
+    logTsMsg(LOG_MSG, OPER_LPATH, strMsg);
+    cfgZmq->isRun = TRUE;
+    return 0;
+}
+
+int dnitZeroMq(cfgZmq * cfgZmq) 
+{
+    zmq_close(cfgZmq->ZmqSocket);
+    zmq_ctx_destroy(cfgZmq->ZmqContext);
+    return 0;
+}
+
+
 void setIntZmqVal(void *socket, char * set_var, int val) 
 {
     // Create Json Obj
@@ -11,6 +44,10 @@ void setIntZmqVal(void *socket, char * set_var, int val)
 
     // Convert json obj to string
     const char *json_string = json_object_to_json_string(jobj);
+
+    char strZmq[300];
+    snprintf(strZmq, sizeof(strZmq), "[0MQ] Send    = %s", json_string);
+    logTsMsg(DBG_MSG, ZMQ_COMM_LPATH, strZmq);
 
     // Send the string
     zmq_send(socket, json_string, strlen(json_string), 0);
@@ -25,6 +62,10 @@ void getIntZmqVal(void *socket, char * req_varname, int * cVar)
     // Receiving zMq message and lock EOM char
     int recv_size = zmq_recv(socket, buffer, BUFFER_SIZE-1, 0);
     buffer[recv_size] = '\0';
+
+    char strZmq[300];
+    snprintf(strZmq, sizeof(strZmq), "[0MQ] Receive = %s", buffer);
+    logTsMsg(DBG_MSG, ZMQ_COMM_LPATH, strZmq);
 
     // Parse data into json obj
     json_object *jobj = json_tokener_parse(buffer);
@@ -53,6 +94,9 @@ void setDoubleZmqVal(void *socket, char * set_var, double val)
 
     // Convert json obj to string
     const char *json_string = json_object_to_json_string(jobj);
+    char strZmq[300];
+    snprintf(strZmq, sizeof(strZmq), "[0MQ] Send    = %s", json_string);
+    logTsMsg(DBG_MSG, ZMQ_COMM_LPATH, strZmq);
 
     // Send the string
     zmq_send(socket, json_string, strlen(json_string), 0);
@@ -67,6 +111,10 @@ void getDoubleZmqVal(void *socket, char * req_varname, double * cVar)
     // Receiving zMq message and lock EOM char
     int recv_size = zmq_recv(socket, buffer, BUFFER_SIZE-1, 0);
     buffer[recv_size] = '\0';
+
+    char strZmq[300];
+    snprintf(strZmq, sizeof(strZmq), "[0MQ] Receive = %s", buffer);
+    logTsMsg(DBG_MSG, ZMQ_COMM_LPATH, strZmq);
 
     // Parse data into json obj
     json_object *jobj = json_tokener_parse(buffer);

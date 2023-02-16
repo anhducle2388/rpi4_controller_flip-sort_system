@@ -6,7 +6,7 @@
 
 
 extern cfgOper cfgAppInst;
-extern cfgEcat cfgEcatJson;
+extern cfgEcat cfgEcatInst;
 
 int execTimingProgram(void) {
     // Routined program execution - Control interval is defined in INTERVAL_IN_MSEC

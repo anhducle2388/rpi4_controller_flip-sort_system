@@ -23,19 +23,14 @@ int cfgHdwrGpio(void);
 int cfgSftwGpio(void);
 int cfgInteruptTimer(void);
 
+
 cfgOper   cfgAppInst  = { 
     .OperationMode.sts = MODE_STOP, 
     .OperationMode.cmd = MODE_STOP
     };
 
-cfgEcat   cfgEcatJson = {
-    };
-
-cfgZmq    cfgZmqInst  = {
-    };
-
-void * zmqCtx;
-void * zmqSkt;
+cfgEcat   cfgEcatInst = {.isRun = FALSE};
+cfgZmq    cfgZmqInst  = {.isRun = FALSE};
 
 /* ################################################ */
 /* ################# MAIN PROGRAM ################# */
@@ -57,19 +52,15 @@ int main(void) {
     uint8_t err = 0;
     uint8_t cntRetry = 1; 
 
-    // Init ZeroMq Socket
-    zmqCtx = zmq_ctx_new();
-    zmqSkt = zmq_socket(zmqCtx, ZMQ_REP);
-    zmq_bind(zmqSkt, "tcp://*:5555");
-
     // Check if another instances is running
     if (getInstatnceStatus() == 0) {
         
         // Init the program with max INIT_RETRY_MAX times retry
         do {
             err += getJsonDeviceCfg();
-            err += getJsonEcatComm(&cfgEcatJson);
-            err += cfgHdwrEcatComm(&cfgEcatJson);
+            err += initZeroMq(&cfgZmqInst, "*", 5555);
+            err += getJsonEcatComm(&cfgEcatInst);
+            err += cfgHdwrEcatComm(&cfgEcatInst);
 
             err += cfgHdwrGpio();
             err += cfgSftwGpio();
@@ -87,17 +78,12 @@ int main(void) {
         // Main loop program
         while(1)
         {
-            int retval;
-            getIntZmqVal(zmqSkt, "python", &retval);
-            setIntZmqVal(zmqSkt, "c", 20);
-            printf("retval = %d\n", retval);
-            usleep(10);
+
         }
 
         // Exit program
         pthread_exit(NULL);
-        zmq_close(zmqSkt);
-        zmq_ctx_destroy(zmqCtx);
+        dnitZeroMq(&cfgZmqInst);
         
         return 0;
     }

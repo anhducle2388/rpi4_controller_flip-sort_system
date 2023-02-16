@@ -41,7 +41,8 @@ bash ./script/stop.sh
   - [ ] Add Modbus TCP/IP to comm with Ethernet Remote IO. -> depriotize Modbus TCP/IP.
 - [ ] Logging handler to avoid CPU overload. -> Reduce log rate so depriotize.
 
-- [ ] Setup API Endpoint Server configure to comm between Web Frontend UI with Controller Program.
-   - [x] Library: Mongoose 7.9 Http Restful Server Example.
+- [ ] Setup API Endpoint Server configure to comm between Web Front-end UI with Controller Program.
+   - [x] Zero Mq to comm between C program and Django Python API Server.
+   - [ ] RestAPI Server: Python Django
    - [ ] Listing APIs to support data uploaded.
    - [ ] Develop APIs.
