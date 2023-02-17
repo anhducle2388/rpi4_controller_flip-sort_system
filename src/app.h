@@ -31,4 +31,4 @@ typedef struct {
 
 #define DEBUG_EXECUTE_INTERVAL_
 #define DEBUG_IO_TASK_INTERVAL_
-#define DEBUG_ZEROMQ_
+#define DEBUG_ZEROMQ
