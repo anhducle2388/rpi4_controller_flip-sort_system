@@ -21,7 +21,7 @@ def receive_val(zmqSkt):
 def initZeroMq(ip_addr: str, port: int):
 
     zmqCxt = zmq.Context()
-    zmqSkt = zmqCxt.zmqSkt(zmq.REQ)
+    zmqSkt = zmqCxt.socket(zmq.REQ)
     zmqSkt.connect("tcp://" + ip_addr + ":" + str(port))
 
     return zmqSkt
@@ -33,7 +33,7 @@ def main():
     while True:
         send_val(zrMqSocket, "python", 10)
         receive_val(zrMqSocket)
-        time.sleep(1)
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     main()

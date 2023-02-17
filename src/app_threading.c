@@ -3,8 +3,8 @@
 
 #define NUM_THREADS 3
 
-#define IO_TASK_INTERVAL_uS 1000
-#define IO_TASK_ECATDIAG_us 100
+#define IO_TASK_INTERVAL_uS 10000
+#define IO_TASK_ECATDIAG_us 1000
 
 extern cfgOper cfgAppInst;
 extern cfgEcat cfgEcatInst;
@@ -57,57 +57,54 @@ void setUserVariableToIoMapping(void) {
 void *Thread_IoTask(void *threadid) {
 
     // setUserVariableToIoMapping();
-
+    if (cfgEcatInst.isRun) 
+    {
     retGoto_Thread1:
-        if (cfgEcatInst.isRun == TRUE) 
-        {
-            printf("%d\n", cfgEcatInst.isRun);
-            // Send and recevie ECAT process data -> IOMap
-            ec_send_processdata();
-            cfgEcatInst.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
-            
-            // Sleep
-            usleep(IO_TASK_INTERVAL_uS);
-        }
+        // Send and recevie ECAT process data -> IOMap
+        ec_send_processdata();
+        cfgEcatInst.curWkc = ec_receive_processdata(EC_TIMEOUTRET);
+        
+        // Sleep
+        usleep(IO_TASK_INTERVAL_uS);
     goto retGoto_Thread1;
+    }
+
 }
 
 // Function for Thread #2
 void *Thread_DiagComm(void *threadid) {
 
+    if (cfgEcatInst.isRun) 
+    {
     retGoto_Thread2:
         // Ecat Diag
-        if (cfgEcatInst.isRun == TRUE) 
-        {
-            chkEcatDiagnosis(&cfgEcatInst);
-            usleep(IO_TASK_ECATDIAG_us);
-        }
+        chkEcatDiagnosis(&cfgEcatInst);
+        usleep(IO_TASK_ECATDIAG_us);
     goto retGoto_Thread2;
+    }
 }
 
 // Function for Thread #3
 void *Thread_Handler(void *threadid) {
+    int retval;
 
     retGoto_Thread3:
         // Toggle to inducate tool still running'
         #ifdef DEBUG_IO_TASK_INTERVAL
-        // if (cfgEcatInst.isRun == TRUE) getEcatIoFrame(&cfgEcatInst);
-        // TOGGLE(rly_STATUS_LED);
+            if (cfgEcatInst.isRun) getEcatIoFrame(&cfgEcatInst);
+            TOGGLE(rly_STATUS_LED);
         #endif              
         
         // Do something like Rest API handing and Database Logging.
-        if (cfgZmqInst.isRun == TRUE)
-        {
-            int retval;
             
             // Receive
             getIntZmqVal(cfgZmqInst.ZmqSocket, "python", &retval);
 
             // Sending
             setIntZmqVal(cfgZmqInst.ZmqSocket, "c", 20);
-        }
+
         // Sleep
-        usleep(1000000);
+        sleep(0.1);
 
     goto retGoto_Thread3;
 }

@@ -30,4 +30,5 @@ typedef struct {
 #define CMMD_CALB    3
 
 #define DEBUG_EXECUTE_INTERVAL_
-#define DEBUG_IO_TASK_INTERVAL
+#define DEBUG_IO_TASK_INTERVAL_
+#define DEBUG_ZEROMQ_

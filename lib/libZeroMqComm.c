@@ -45,9 +45,11 @@ void setIntZmqVal(void *socket, char * set_var, int val)
     // Convert json obj to string
     const char *json_string = json_object_to_json_string(jobj);
 
+    #ifdef DEBUG_ZEROMQ
     char strZmq[300];
     snprintf(strZmq, sizeof(strZmq), "[0MQ] Send    = %s", json_string);
     logTsMsg(DBG_MSG, ZMQ_COMM_LPATH, strZmq);
+    #endif
 
     // Send the string
     zmq_send(socket, json_string, strlen(json_string), 0);
@@ -63,9 +65,11 @@ void getIntZmqVal(void *socket, char * req_varname, int * cVar)
     int recv_size = zmq_recv(socket, buffer, BUFFER_SIZE-1, 0);
     buffer[recv_size] = '\0';
 
+    #ifdef DEBUG_ZEROMQ
     char strZmq[300];
     snprintf(strZmq, sizeof(strZmq), "[0MQ] Receive = %s", buffer);
     logTsMsg(DBG_MSG, ZMQ_COMM_LPATH, strZmq);
+    #endif
 
     // Parse data into json obj
     json_object *jobj = json_tokener_parse(buffer);
@@ -94,9 +98,12 @@ void setDoubleZmqVal(void *socket, char * set_var, double val)
 
     // Convert json obj to string
     const char *json_string = json_object_to_json_string(jobj);
+
+    #ifdef DEBUG_ZEROMQ
     char strZmq[300];
     snprintf(strZmq, sizeof(strZmq), "[0MQ] Send    = %s", json_string);
     logTsMsg(DBG_MSG, ZMQ_COMM_LPATH, strZmq);
+    #endif
 
     // Send the string
     zmq_send(socket, json_string, strlen(json_string), 0);
@@ -112,9 +119,11 @@ void getDoubleZmqVal(void *socket, char * req_varname, double * cVar)
     int recv_size = zmq_recv(socket, buffer, BUFFER_SIZE-1, 0);
     buffer[recv_size] = '\0';
 
+    #ifdef DEBUG_ZEROMQ
     char strZmq[300];
     snprintf(strZmq, sizeof(strZmq), "[0MQ] Receive = %s", buffer);
     logTsMsg(DBG_MSG, ZMQ_COMM_LPATH, strZmq);
+    #endif
 
     // Parse data into json obj
     json_object *jobj = json_tokener_parse(buffer);

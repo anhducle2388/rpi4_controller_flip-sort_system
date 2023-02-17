@@ -3,6 +3,7 @@
 #include <zmq.h>
 #include <json-c/json.h>
 
+#include "src/app.h"
 #include "lib/libLogHandler.h"
 
 #define ZMQ_COMM_LPATH   "./log/log_zmq.txt"
